@@ -24,7 +24,6 @@
     --color-destructive-foreground: var(--destructive-foreground);
     --color-input: var(--input);
     --color-border: var(--border);
-    --radius-md: var(--radius);
 }
 
 :root {
@@ -44,7 +43,6 @@
     --input: #ffffff; /* Input field backgrounds */
     --destructive: #e74c3c; /* Error/delete buttons - red */
     --destructive-foreground: #ffffff; /* Text on destructive actions */
-    --radius: 0.625rem;
 }
 
 .dark {
@@ -67,9 +65,7 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+ 
   body {
     @apply bg-background text-foreground;
   }
@@ -84,7 +80,7 @@
 
 @layer components {
   .container-page {
-    max-width: 1800px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 24px;
   }
