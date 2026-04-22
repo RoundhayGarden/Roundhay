@@ -1,11 +1,11 @@
 import { Button } from "./components/ui/button"
+import MainLayout from "./layout/MainLayout"
 
 
 const App = () => {
   return (
-    <>
-    <Button>Hi</Button>
-    </>
+    <MainLayout>
+    </MainLayout>
   )
 }
 
