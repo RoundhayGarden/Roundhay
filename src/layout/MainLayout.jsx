@@ -1,7 +1,16 @@
-const MainLayout = ({ children }) => {
+import { Outlet } from 'react-router-dom'
+import Navbar from '../components/layout/Navbar'
+
+const MainLayout = () => {
   return (
-    <div className="container-page">
-      <main>{children}</main>
+    <div
+      className="min-h-screen"
+      style={{ background: 'var(--background)', color: 'var(--foreground)' }}
+    >
+      <Navbar />
+      <main>
+        <Outlet />
+      </main>
     </div>
   )
 }
