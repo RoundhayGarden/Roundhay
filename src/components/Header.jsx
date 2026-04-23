@@ -1,4 +1,4 @@
-import {  useState } from "react"
+import { useEffect, useState } from "react"
 import { Globe, Menu, Moon, Search, Sun, User, X } from "lucide-react"
 import {
   DropdownMenu,
@@ -12,6 +12,17 @@ const NAV_ITEMS = ["Home", "Movies", "Tv Shows"]
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [language, setLanguage] = useState("en")
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === "undefined") return false
+    return (
+      document.documentElement.classList.contains("dark") ||
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    )
+  })
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode)
+  }, [isDarkMode])
 
 
   const iconBtnClass =
@@ -65,7 +76,7 @@ const Header = () => {
             onClick={() => setIsDarkMode((prev) => !prev)}
             className={iconBtnClass}
           >
-            <Sun size={18} /> 
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
           <DropdownMenu>
