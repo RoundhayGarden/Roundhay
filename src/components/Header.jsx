@@ -1,5 +1,6 @@
-import {  useState } from "react"
+import { useEffect, useState } from "react"
 import { Globe, Menu, Moon, Search, Sun, User, X } from "lucide-react"
+import { NavLink } from "react-router-dom"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,21 +8,41 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 
-const NAV_ITEMS = ["Home", "Movies", "Tv Shows"]
+const NAV_LINKS = [
+  { label: "Home", to: "/" },
+  { label: "Movies", to: "/movies/popular" },
+  { label: "Series", to: "/series/airing-today" },
+]
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [language, setLanguage] = useState("en")
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === "undefined") return false
+    return (
+      document.documentElement.classList.contains("dark") ||
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    )
+  })
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode)
+  }, [isDarkMode])
 
   const iconBtnClass =
     "inline-flex h-8 w-8 items-center justify-center rounded-full border border-accent/30 bg-primary/20 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-accent/40 md:h-9 md:w-9"
 
+  const navLinkClass = ({ isActive }) =>
+    `text-[0.95rem] text-primary-foreground/95 no-underline transition hover:text-accent hover:opacity-100 ${
+      isActive ? "text-accent" : ""
+    }`
+
   return (
     <>
       <header className="sticky top-2 z-40 flex min-h-[60px] items-center gap-3 rounded-[18px] border border-accent/45 bg-primary/75 px-3 py-2 text-primary-foreground shadow-lg backdrop-blur-[10px] md:top-4 md:min-h-[68px] md:gap-6 md:rounded-full md:px-[18px] md:py-[10px]">
-        <a
-          href="#"
+        <NavLink
+          to="/"
+          end
           aria-label="Roundhay home"
           className="inline-flex items-center gap-2.5 text-inherit no-underline"
         >
@@ -31,7 +52,7 @@ const Header = () => {
           <span className="hidden text-[0.98rem] font-semibold md:inline">
             Roundhay
           </span>
-        </a>
+        </NavLink>
 
         <button
           type="button"
@@ -47,14 +68,10 @@ const Header = () => {
           aria-label="Main navigation"
           className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-[22px] md:flex"
         >
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="text-[0.95rem] text-primary-foreground/95 no-underline transition hover:text-accent hover:opacity-100"
-            >
-              {item}
-            </a>
+          {NAV_LINKS.map((item) => (
+            <NavLink key={item.to} to={item.to} end={item.to === "/"} className={navLinkClass}>
+              {item.label}
+            </NavLink>
           ))}
         </nav>
 
@@ -65,7 +82,7 @@ const Header = () => {
             onClick={() => setIsDarkMode((prev) => !prev)}
             className={iconBtnClass}
           >
-            <Sun size={18} /> 
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
           <DropdownMenu>
@@ -84,19 +101,11 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <button
-            type="button"
-            aria-label="Search"
-            className={iconBtnClass}
-          >
+          <button type="button" aria-label="Search" className={iconBtnClass}>
             <Search size={18} />
           </button>
 
-          <button
-            type="button"
-            aria-label="Profile"
-            className={iconBtnClass}
-          >
+          <button type="button" aria-label="Profile" className={iconBtnClass}>
             <User size={18} />
           </button>
         </div>
@@ -107,14 +116,16 @@ const Header = () => {
         aria-label="Mobile main navigation"
         className={`${isMenuOpen ? "block" : "hidden"} mt-2 overflow-hidden rounded-2xl border border-accent/50 bg-card shadow-lg md:hidden`}
       >
-        {NAV_ITEMS.map((item) => (
-          <a
-            key={item}
-            href="#"
+        {NAV_LINKS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === "/"}
             className="block border-b border-border/60 px-[14px] py-3 text-foreground no-underline last:border-b-0"
+            onClick={() => setIsMenuOpen(false)}
           >
-            {item}
-          </a>
+            {item.label}
+          </NavLink>
         ))}
       </nav>
     </>
