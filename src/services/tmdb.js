@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'YOUR_API_KEY'; // حط مفتاحك هنا مؤقتا لو مفيش .env
+const ACCESS_TOKEN = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 const tmdb = axios.create({
   baseURL: BASE_URL,
-  params: {
-    api_key: API_KEY,
+  headers: {
+    accept: 'application/json',
+    Authorization: `Bearer ${ACCESS_TOKEN}`,
   },
 });
 
