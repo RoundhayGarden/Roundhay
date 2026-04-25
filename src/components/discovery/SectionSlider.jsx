@@ -2,10 +2,10 @@ import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
-import { ChevronLeft, ChevronRight, Star, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { MovieCardSkeleton } from '@/components/ui/skeleton';
+import VoteProgress from '../VoteProgress';
 import { getImageUrl } from '../../services/tmdb';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
@@ -52,6 +52,14 @@ export default function SectionSlider({
         if (onGenreChange) onGenreChange(newGenre);
     };
 
+    const normalizedTitle = title?.trim().toLowerCase();
+    const seeMorePath =
+        normalizedTitle === 'movies'
+            ? '/movies/popular'
+            : normalizedTitle === 'trending'
+              ? '/movies/trending'
+              : `/search?query=${encodeURIComponent(title ?? '')}`;
+
     return (
         <div className="py-8" style={{ fontFamily: "'Outfit', 'Inter Variable', sans-serif" }}>
 
@@ -61,7 +69,7 @@ export default function SectionSlider({
                     <h3 className="section-title">{title}</h3>
                     {showSeeMore && (
                         <Button variant="ghost" size="sm" asChild className="gap-1.5 group">
-                            <Link to={`/search?query=${encodeURIComponent(title)}`}>
+                            <Link to={seeMorePath}>
                                 See More
                                 <ArrowRight
                                     size={14}
@@ -154,11 +162,11 @@ export default function SectionSlider({
                             1280: { slidesPerView: 6.3, spaceBetween: 20 },
                             1600: { slidesPerView: 7.3, spaceBetween: 20 },
                         }}
-                        className="!overflow-visible"
+                        className="overflow-visible!"
                     >
                         {displayMovies.map((movie, idx) => (
                             <SwiperSlide key={`${movie.id}-${idx}`} className="cursor-pointer">
-                                <MovieCard movie={movie} index={idx} />
+                                <MovieCard movie={movie} />
                             </SwiperSlide>
                         ))}
                     </Swiper>
@@ -211,103 +219,48 @@ export default function SectionSlider({
 }
 
 // ── Movie Card ─────────────────────────────────────────
-function MovieCard({ movie, index }) {
-    const [hovered, setHovered] = useState(false);
-
-    // Zustand
-    const toggleWishlist = useAppStore(s => s.toggleWishlist);
-    const isInWishlist   = useAppStore(s => s.isInWishlist);
-    const wishlisted     = isInWishlist(movie.id);
+function MovieCard({ movie }) {
+    const toggleWishlist = useAppStore((s) => s.toggleWishlist);
+    const title = movie.title || movie.name || 'Untitled';
+    const releaseDate = movie.release_date || movie.first_air_date || 'N/A';
+    const posterPath = movie.posterPath || movie.poster_path;
 
     return (
-        <div
-            className="relative overflow-hidden rounded-2xl aspect-[2/3]"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            style={{
-                background: 'var(--muted)',
-                border: '1px solid var(--glass-border)',
-                transition: 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease',
-                transform: hovered ? 'scale(1.04) translateY(-6px)' : 'scale(1)',
-                boxShadow: hovered
-                    ? '0 24px 50px var(--shadow-color), 0 0 20px var(--movie-accent)'
-                    : '0 4px 16px var(--shadow-color)',
-                animation: `cardReveal 0.5s ${Math.min(index * 40, 500)}ms ease both`,
-            }}
-        >
-            {/* Wishlist toggle – Shadcn Button */}
-            <Button
-                variant="icon"
-                size="icon-sm"
-                className={cn(
-                    "absolute top-2 left-2 z-20 transition-all duration-300",
-                    wishlisted
-                        ? "!bg-accent !text-accent-foreground !border-transparent opacity-100 scale-100"
-                        : "opacity-0 scale-75",
-                    hovered && !wishlisted && "opacity-100 scale-100"
+        <article className="group overflow-hidden rounded-lg border border-border bg-card">
+            <div className="relative aspect-2/3 w-full bg-muted">
+                {posterPath ? (
+                    <img
+                        src={getImageUrl(posterPath, 'w500')}
+                        alt={title}
+                        className="h-full w-full object-cover transition duration-300 group-hover:brightness-50"
+                        loading="lazy"
+                    />
+                ) : (
+                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                        No Poster
+                    </div>
                 )}
-                onClick={(e) => { e.stopPropagation(); toggleWishlist(movie); }}
-                title={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            >
-                {wishlisted
-                    ? <BookmarkCheck size={15} />
-                    : <Bookmark size={15} />
-                }
-            </Button>
 
-            {/* Rating badge */}
-            {movie.vote_average > 0 && (
-                <Badge
-                    variant="outline"
-                    className={cn(
-                        "absolute top-2 right-2 z-20 transition-all duration-300",
-                        "!bg-black/70 !border-white/10 !text-white backdrop-blur-sm",
-                        hovered ? "opacity-100" : "opacity-0"
-                    )}
-                >
-                    <Star size={9} fill="#F5C518" color="#F5C518" />
-                    {movie.vote_average.toFixed(1)}
-                </Badge>
-            )}
-
-            {/* Poster */}
-            {movie.poster_path ? (
-                <img
-                    src={getImageUrl(movie.poster_path, 'w500')}
-                    alt={movie.title || movie.name}
-                    className="w-full h-full object-cover"
-                    style={{
-                        transition: 'transform 0.6s cubic-bezier(0.4,0,0.2,1)',
-                        transform: hovered ? 'scale(1.08)' : 'scale(1)',
+                <button
+                    type="button"
+                    aria-label="Add to wishlist"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist(movie);
                     }}
-                    loading="lazy"
-                />
-            ) : (
-                <div
-                    className="w-full h-full flex items-center justify-center p-4 text-center"
-                    style={{ background: 'var(--primary)', color: 'var(--accent)' }}
+                    className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-foreground opacity-0 shadow transition duration-300 group-hover:opacity-100"
                 >
-                    <span className="text-xs font-semibold">{movie.title || movie.name}</span>
-                </div>
-            )}
+                    <Heart size={16} />
+                </button>
 
-            {/* Bottom overlay */}
-            <div
-                className="absolute bottom-0 left-0 right-0 p-4"
-                style={{
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 100%)',
-                    opacity: hovered ? 1 : 0,
-                    transform: hovered ? 'translateY(0)' : 'translateY(6px)',
-                    transition: 'all 0.35s ease',
-                }}
-            >
-                <p className="font-semibold text-sm truncate text-white">
-                    {movie.title || movie.name}
-                </p>
-                <p className="text-xs mt-0.5 text-white/60">
-                    {movie.release_date ? new Date(movie.release_date).getFullYear() : ''}
-                </p>
+                <div className="pointer-events-none absolute bottom-2 left-2 opacity-0 transition duration-300 group-hover:opacity-100">
+                    <VoteProgress voteAverage={movie.vote_average} />
+                </div>
             </div>
-        </div>
+            <div className="p-3">
+                <h2 className="font-medium text-card-foreground">{title}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">{releaseDate}</p>
+            </div>
+        </article>
     );
 }

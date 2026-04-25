@@ -1,14 +1,22 @@
-const MOVIE_LINKS = ["Popular", "Trending", "Top Rated", "Now Playing", "Upcoming"]
+import { Link } from 'react-router-dom'
+
+const MOVIE_LINKS = [
+  { label: 'Popular', path: '/movies/popular' },
+  { label: 'Trending', path: '/movies/trending' },
+  { label: 'Top Rated', path: '/movies/top_rated' },
+  { label: 'Now Playing', path: '/movies/now_playing' },
+  { label: 'Upcoming', path: '/movies/upcoming' },
+]
 const TV_LINKS = ["Popular", "Trending", "Top Rated", "On The Air", "Airing Today"]
 
 const Footer = () => {
   return (
-    <footer className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 overflow-hidden border-t border-accent/30 bg-primary/95 text-primary-foreground">
+    <footer className="relative mt-10 overflow-hidden border-t border-glass bg-(--nav-bg) text-foreground backdrop-blur-xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(165,201,202,0.14),transparent_45%)]" />
-      <div className="relative grid gap-10 px-3 py-10 sm:grid-cols-2 md:px-6 lg:grid-cols-3 lg:px-10">
+      <div className="relative mx-auto grid w-full max-w-[1400px] gap-10 px-4 py-10 sm:grid-cols-2 sm:px-6 md:px-8 lg:grid-cols-3">
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold tracking-wide text-accent">ROUNDHAY</h3>
-          <p className="max-w-xs text-sm text-primary-foreground/80">
+          <p className="max-w-xs text-sm text-muted-foreground">
             Browse movies and TV shows with categories updated daily.
           </p>
         </div>
@@ -16,13 +24,13 @@ const Footer = () => {
         <nav aria-label="Movies links" className="space-y-2">
           <h4 className="text-xl font-medium">Movies</h4>
           {MOVIE_LINKS.map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="block text-sm text-primary-foreground/75 transition hover:text-accent"
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block text-sm text-muted-foreground transition hover:text-accent"
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
         </nav>
 
@@ -32,7 +40,7 @@ const Footer = () => {
             <a
               key={item}
               href="#"
-              className="block text-sm text-primary-foreground/75 transition hover:text-accent"
+              className="block text-sm text-muted-foreground transition hover:text-accent"
             >
               {item}
             </a>
@@ -40,7 +48,7 @@ const Footer = () => {
         </nav>
       </div>
 
-      <div className="relative border-t border-accent/20 py-4 text-center text-xs text-primary-foreground/70">
+      <div className="relative border-t border-glass py-4 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} Roundhay. All rights reserved.
       </div>
     </footer>
