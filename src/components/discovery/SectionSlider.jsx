@@ -22,6 +22,7 @@ export default function SectionSlider({
     title,
     movies = [],
     showSeeMore = true,
+    seeMorePath,
     showGenreTabs = false,
     allGenreMovies = {},
     onGenreChange = null,
@@ -53,11 +54,14 @@ export default function SectionSlider({
     };
 
     const normalizedTitle = title?.trim().toLowerCase();
-    const seeMorePath =
-        normalizedTitle === 'movies'
-            ? '/movies/popular'
-            : normalizedTitle === 'trending'
-              ? '/movies/trending'
+    const resolvedSeeMorePath = seeMorePath
+        ? seeMorePath
+        : normalizedTitle === 'movies'
+          ? '/movies/popular'
+          : normalizedTitle === 'trending'
+            ? '/movies/trending'
+            : normalizedTitle === 'series'
+              ? '/series/airing_today'
               : `/search?query=${encodeURIComponent(title ?? '')}`;
 
     return (
@@ -69,7 +73,7 @@ export default function SectionSlider({
                     <h3 className="section-title">{title}</h3>
                     {showSeeMore && (
                         <Button variant="ghost" size="sm" asChild className="gap-1.5 group">
-                            <Link to={seeMorePath}>
+                            <Link to={resolvedSeeMorePath}>
                                 See More
                                 <ArrowRight
                                     size={14}

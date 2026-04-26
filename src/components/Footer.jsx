@@ -7,7 +7,13 @@ const MOVIE_LINKS = [
   { label: 'Now Playing', path: '/movies/now_playing' },
   { label: 'Upcoming', path: '/movies/upcoming' },
 ]
-const TV_LINKS = ["Popular", "Trending", "Top Rated", "On The Air", "Airing Today"]
+const TV_LINKS = [
+  { label: 'Popular', path: '/series/popular' },
+  { label: 'Trending', path: '/series/trending' },
+  { label: 'Top Rated', path: '/series/top_rated' },
+  { label: 'On The Air', path: '/series/on_the_air' },
+  { label: 'Airing Today', path: '/series/airing_today' },
+]
 
 const Footer = () => {
   return (
@@ -37,13 +43,13 @@ const Footer = () => {
         <nav aria-label="TV links" className="space-y-2">
           <h4 className="text-xl font-medium">TV Series</h4>
           {TV_LINKS.map((item) => (
-            <a
-              key={item}
-              href="#"
+            <Link
+              key={item.path}
+              to={item.path}
               className="block text-sm text-muted-foreground transition hover:text-accent"
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
         </nav>
       </div>

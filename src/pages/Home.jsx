@@ -135,6 +135,7 @@ export default function Home() {
                             title="Series"
                             movies={displaySeriesGenre}
                             showSeeMore
+                            seeMorePath="/series/airing_today"
                             showGenreTabs
                             allGenreMovies={seriesGenreMovies}
                             onGenreChange={handleSeriesGenreChange}
