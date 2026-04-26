@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { Play, Info, Star, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Play, Info, Star, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/store/useAppStore';
-import { fetchNowPlaying, getImageUrl } from '../../services/tmdb';
+import { fetchNowPlaying, getImageUrl, getMovieVideos } from '../../services/tmdb';
+import { getTvVideos } from '../../../services/seriesApi';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
 export default function HeroBanner() {
@@ -12,6 +14,10 @@ export default function HeroBanner() {
     const [prevIndex, setPrevIndex] = useState(null);
     const [direction, setDirection] = useState('next');
     const [animating, setAnimating] = useState(false);
+    const [isTrailerOpen, setIsTrailerOpen] = useState(false);
+    const [isTrailerLoading, setIsTrailerLoading] = useState(false);
+    const [trailerError, setTrailerError] = useState('');
+    const [activeVideo, setActiveVideo] = useState(null);
     const intervalRef = useRef(null);
 
     // ── Zustand ──────────────────────────────────────
@@ -62,6 +68,50 @@ export default function HeroBanner() {
     const current  = movies[activeIndex];
     const prev     = prevIndex !== null ? movies[prevIndex] : null;
     const wishlisted = isInWishlist(current.id);
+
+    const getPreferredVideo = (videos = []) => {
+        const youtubeVideos = videos.filter(video => video.site === 'YouTube' && video.key);
+        if (!youtubeVideos.length) return null;
+
+        const trailer = youtubeVideos.find(video => video.type === 'Trailer' && video.official);
+        if (trailer) return trailer;
+
+        const anyTrailer = youtubeVideos.find(video => video.type === 'Trailer');
+        if (anyTrailer) return anyTrailer;
+
+        const teaser = youtubeVideos.find(video => video.type === 'Teaser');
+        if (teaser) return teaser;
+
+        return youtubeVideos[0];
+    };
+
+    const handleWatchNow = async () => {
+        if (!current?.id) return;
+
+        setIsTrailerOpen(true);
+        setIsTrailerLoading(true);
+        setTrailerError('');
+        setActiveVideo(null);
+
+        try {
+            const mediaType = current.media_type === 'tv' || current.name ? 'tv' : 'movie';
+            const data = mediaType === 'tv'
+                ? await getTvVideos(current.id)
+                : await getMovieVideos(current.id);
+
+            const selectedVideo = getPreferredVideo(data?.results || []);
+            if (!selectedVideo) {
+                setTrailerError('No playable trailer was found for this title.');
+                return;
+            }
+
+            setActiveVideo(selectedVideo);
+        } catch {
+            setTrailerError('Failed to load trailer. Please try again.');
+        } finally {
+            setIsTrailerLoading(false);
+        }
+    };
 
     return (
         <div
@@ -224,7 +274,7 @@ export default function HeroBanner() {
                 {/* CTA Buttons — Shadcn */}
                 <div key={`btns-${activeIndex}`} className="flex items-center gap-3"
                     style={{ animation: 'slideUpFade 0.8s 0.45s ease both' }}>
-                    <Button variant="gradient" size="lg" className="group">
+                    <Button variant="gradient" size="lg" className="group" onClick={handleWatchNow}>
                         <Play size={17} fill="currentColor" className="group-hover:scale-110 transition-transform" />
                         Watch Now
                     </Button>
@@ -302,6 +352,52 @@ export default function HeroBanner() {
             </div>
 
             {/* ── Keyframes ── */}
+            <Dialog
+                open={isTrailerOpen}
+                onOpenChange={(open) => {
+                    setIsTrailerOpen(open);
+                    if (!open) {
+                        setActiveVideo(null);
+                        setTrailerError('');
+                    }
+                }}
+            >
+                <DialogContent className="overflow-hidden">
+                    <DialogHeader>
+                        <DialogTitle>{current.title || current.name}</DialogTitle>
+                        <DialogDescription>
+                            {activeVideo?.name || 'Official trailer and videos'}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="aspect-video w-full bg-black">
+                        {isTrailerLoading && (
+                            <div className="flex h-full items-center justify-center gap-2 text-muted-foreground">
+                                <Loader2 className="size-5 animate-spin" />
+                                Loading trailer...
+                            </div>
+                        )}
+
+                        {!isTrailerLoading && trailerError && (
+                            <div className="flex h-full items-center justify-center px-6 text-center text-sm text-destructive">
+                                {trailerError}
+                            </div>
+                        )}
+
+                        {!isTrailerLoading && !trailerError && activeVideo && (
+                            <iframe
+                                title={activeVideo.name}
+                                src={`https://www.youtube.com/embed/${activeVideo.key}?autoplay=1&rel=0`}
+                                className="h-full w-full"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerPolicy="strict-origin-when-cross-origin"
+                                allowFullScreen
+                            />
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <style>{`
                 @keyframes bgFadeIn  { from{opacity:0} to{opacity:1} }
                 @keyframes bgFadeOut { from{opacity:1} to{opacity:0} }

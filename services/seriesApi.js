@@ -47,4 +47,9 @@ export const getTvImages = async (tvId) => {
   return response.data
 }
 
+export const getTvVideos = async (tvId) => {
+  const response = await seriesApi.get(`/tv/${tvId}/videos`)
+  return response.data
+}
+
 export default seriesApi
