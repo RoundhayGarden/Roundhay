@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Heart } from "lucide-react"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 
 import {
   getMovieImages,
@@ -33,6 +33,7 @@ const TAB_CONFIG = [
 
 const Movies = () => {
   const { tab = "popular" } = useParams()
+  const navigate = useNavigate()
   const [movies, setMovies] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
@@ -104,6 +105,25 @@ const Movies = () => {
     setPage((prev) => prev + 1)
   }, [])
 
+  const handleOpenMovieDetails = useCallback(
+    (movie) => {
+      navigate(`/movie/${movie.id}`, {
+        state: {
+          movie: {
+            id: movie.id,
+            title: movie.title,
+            posterPath: movie.posterPath || movie.poster_path,
+            backdropPath: movie.backdrop_path,
+            vote_average: movie.vote_average,
+            overview: movie.overview,
+            release_date: movie.release_date,
+          },
+        },
+      })
+    },
+    [navigate]
+  )
+
   useInfiniteScrollObserver({
     targetRef: loadMoreRef,
     isLoading,
@@ -162,7 +182,16 @@ const Movies = () => {
               return (
                 <article
                   key={movie.id}
-                  className="group overflow-hidden rounded-lg border border-border bg-card"
+                  className="group cursor-pointer overflow-hidden rounded-lg border border-border bg-card"
+                  onClick={() => handleOpenMovieDetails(movie)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      handleOpenMovieDetails(movie)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="relative aspect-2/3 w-full bg-muted">
                     {movie.posterPath ? (
@@ -181,7 +210,10 @@ const Movies = () => {
                     <button
                       type="button"
                       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      onClick={() => toggleWishlist(movie)}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        toggleWishlist(movie)
+                      }}
                       className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
                         wishlisted
                           ? "text-accent opacity-100"

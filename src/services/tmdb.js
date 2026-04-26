@@ -75,6 +75,11 @@ export const getMovieImages = async (movieId) => {
   return data;
 };
 
+export const getMovieDetails = async (movieId) => {
+  const { data } = await tmdb.get(`/movie/${movieId}`);
+  return data;
+};
+
 export const getMovieVideos = async (movieId) => {
   const { data } = await tmdb.get(`/movie/${movieId}/videos`);
   return data;

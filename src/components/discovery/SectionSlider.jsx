@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { ChevronLeft, ChevronRight, ArrowRight, Heart } from 'lucide-react';
@@ -231,13 +231,53 @@ export default function SectionSlider({
 
 // ── Movie Card ─────────────────────────────────────────
 function MovieCard({ movie }) {
+    const navigate = useNavigate();
     const toggleWishlist = useAppStore((s) => s.toggleWishlist);
     const title = movie.title || movie.name || 'Untitled';
     const releaseDate = movie.release_date || movie.first_air_date || 'N/A';
     const posterPath = movie.posterPath || movie.poster_path;
+    const isMovie = movie.media_type ? movie.media_type === 'movie' : !!movie.title;
 
     return (
-        <article className="group overflow-hidden rounded-lg border border-border bg-card">
+        <article
+            className="group cursor-pointer overflow-hidden rounded-lg border border-border bg-card"
+            onClick={() => {
+                if (!movie?.id || !isMovie) return;
+                navigate(`/movie/${movie.id}`, {
+                    state: {
+                        movie: {
+                            id: movie.id,
+                            title: movie.title,
+                            poster_path: movie.poster_path,
+                            backdrop_path: movie.backdrop_path,
+                            vote_average: movie.vote_average,
+                            overview: movie.overview,
+                            release_date: movie.release_date,
+                        },
+                    },
+                });
+            }}
+            onKeyDown={(event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && movie?.id && isMovie) {
+                    event.preventDefault();
+                    navigate(`/movie/${movie.id}`, {
+                        state: {
+                            movie: {
+                                id: movie.id,
+                                title: movie.title,
+                                poster_path: movie.poster_path,
+                                backdrop_path: movie.backdrop_path,
+                                vote_average: movie.vote_average,
+                                overview: movie.overview,
+                                release_date: movie.release_date,
+                            },
+                        },
+                    });
+                }
+            }}
+            role="button"
+            tabIndex={0}
+        >
             <div className="relative aspect-2/3 w-full bg-muted">
                 {posterPath ? (
                     <img

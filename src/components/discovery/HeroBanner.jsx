@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Play, Info, Star, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { cn } from '@/lib/utils';
 
 export default function HeroBanner() {
+    const navigate = useNavigate();
     const [movies, setMovies]       = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [prevIndex, setPrevIndex] = useState(null);
@@ -111,6 +113,26 @@ export default function HeroBanner() {
         } finally {
             setIsTrailerLoading(false);
         }
+    };
+
+    const handleMoreInfo = () => {
+        if (!current?.id) return;
+        const isMovie = current.media_type ? current.media_type === 'movie' : !!current.title;
+        if (!isMovie) return;
+
+        navigate(`/movie/${current.id}`, {
+            state: {
+                movie: {
+                    id: current.id,
+                    title: current.title,
+                    poster_path: current.poster_path,
+                    backdrop_path: current.backdrop_path,
+                    vote_average: current.vote_average,
+                    overview: current.overview,
+                    release_date: current.release_date,
+                },
+            },
+        });
     };
 
     return (
@@ -278,7 +300,7 @@ export default function HeroBanner() {
                         <Play size={17} fill="currentColor" className="group-hover:scale-110 transition-transform" />
                         Watch Now
                     </Button>
-                    <Button variant="outline" size="lg">
+                    <Button variant="outline" size="lg" onClick={handleMoreInfo}>
                         <Info size={17} />
                         More Info
                     </Button>
