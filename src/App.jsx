@@ -1,12 +1,6 @@
-import { Button } from "./components/ui/button"
-import MainLayout from "./layout/MainLayout"
+import { RouterProvider } from "react-router-dom";
+import router from "./layout/router";
 
+const App = () => <RouterProvider router={router} />;
 
-const App = () => {
-  return (
-    <MainLayout>
-    </MainLayout>
-  )
-}
-
-export default App
+export default App;
