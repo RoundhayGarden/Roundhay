@@ -47,6 +47,18 @@ export const getTvImages = async (tvId) => {
   return response.data
 }
 
+export const getTvDetails = async (tvId) => {
+  const response = await seriesApi.get(`/tv/${tvId}`)
+  return response.data
+}
+
+export const getSimilarTv = async (tvId, page = 1) => {
+  const response = await seriesApi.get(`/tv/${tvId}/similar`, {
+    params: { page },
+  })
+  return response.data
+}
+
 export const getTvVideos = async (tvId) => {
   const response = await seriesApi.get(`/tv/${tvId}/videos`)
   return response.data

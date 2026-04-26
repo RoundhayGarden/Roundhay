@@ -118,18 +118,33 @@ export default function HeroBanner() {
     const handleMoreInfo = () => {
         if (!current?.id) return;
         const isMovie = current.media_type ? current.media_type === 'movie' : !!current.title;
-        if (!isMovie) return;
+        if (isMovie) {
+            navigate(`/movie/${current.id}`, {
+                state: {
+                    movie: {
+                        id: current.id,
+                        title: current.title,
+                        poster_path: current.poster_path,
+                        backdrop_path: current.backdrop_path,
+                        vote_average: current.vote_average,
+                        overview: current.overview,
+                        release_date: current.release_date,
+                    },
+                },
+            });
+            return;
+        }
 
-        navigate(`/movie/${current.id}`, {
+        navigate(`/series/details/${current.id}`, {
             state: {
-                movie: {
+                series: {
                     id: current.id,
-                    title: current.title,
+                    name: current.name,
                     poster_path: current.poster_path,
                     backdrop_path: current.backdrop_path,
                     vote_average: current.vote_average,
                     overview: current.overview,
-                    release_date: current.release_date,
+                    first_air_date: current.first_air_date,
                 },
             },
         });

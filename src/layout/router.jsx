@@ -6,6 +6,7 @@ import Series from "../pages/Series"
 import Collection from "../pages/Collection"
 import SearchResults from "../pages/SearchResults"
 import MovieDetails from "../pages/MovieDetails"
+import SeriesDetails from "../pages/SeriesDetails"
 
 const router = createBrowserRouter(
   [
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
         { path: "movie/:id", element: <MovieDetails /> },
         { path: "series", element: <Navigate to="/series/airing_today" replace /> },
         { path: "series/:tab", element: <Series /> },
+        { path: "series/details/:id", element: <SeriesDetails /> },
         { path: "collection", element: <Collection /> },
         { path: "search", element: <SearchResults /> },
         { path: "*", element: <Navigate to="/" replace /> },

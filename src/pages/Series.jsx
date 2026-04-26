@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Heart } from "lucide-react"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 
 import {
   getAiringTodayTv,
@@ -33,6 +33,7 @@ const TAB_CONFIG = [
 
 const Series = () => {
   const { tab = "popular" } = useParams()
+  const navigate = useNavigate()
   const [shows, setShows] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
@@ -102,6 +103,25 @@ const Series = () => {
     setPage((prev) => prev + 1)
   }, [])
 
+  const handleOpenSeriesDetails = useCallback(
+    (show) => {
+      navigate(`/series/details/${show.id}`, {
+        state: {
+          series: {
+            id: show.id,
+            name: show.name,
+            poster_path: show.posterPath || show.poster_path,
+            backdrop_path: show.backdrop_path,
+            vote_average: show.vote_average,
+            overview: show.overview,
+            first_air_date: show.first_air_date,
+          },
+        },
+      })
+    },
+    [navigate]
+  )
+
   useInfiniteScrollObserver({
     targetRef: loadMoreRef,
     isLoading,
@@ -159,7 +179,16 @@ const Series = () => {
               return (
                 <article
                   key={show.id}
-                  className="group overflow-hidden rounded-lg border border-border bg-card"
+                  className="group cursor-pointer overflow-hidden rounded-lg border border-border bg-card"
+                  onClick={() => handleOpenSeriesDetails(show)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      handleOpenSeriesDetails(show)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="relative aspect-2/3 w-full bg-muted">
                     {show.posterPath ? (
@@ -178,7 +207,10 @@ const Series = () => {
                     <button
                       type="button"
                       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      onClick={() => toggleWishlist(show)}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        toggleWishlist(show)
+                      }}
                       className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
                         wishlisted
                           ? "text-accent opacity-100"

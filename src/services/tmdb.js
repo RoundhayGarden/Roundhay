@@ -80,6 +80,13 @@ export const getMovieDetails = async (movieId) => {
   return data;
 };
 
+export const getSimilarMovies = async (movieId, page = 1) => {
+  const { data } = await tmdb.get(`/movie/${movieId}/similar`, {
+    params: { page },
+  });
+  return data;
+};
+
 export const getMovieVideos = async (movieId) => {
   const { data } = await tmdb.get(`/movie/${movieId}/videos`);
   return data;

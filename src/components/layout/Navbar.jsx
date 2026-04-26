@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Bell, User, Sun, Moon, Menu, X, Bookmark, Heart } from 'lucide-react';
+import { Search,  User, Sun, Moon, Menu, X, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/store/useAppStore';
@@ -119,11 +119,6 @@ export default function Navbar() {
                                 </Badge>
                             )}
                         </div>
-
-                        {/* Bell */}
-                        <Button variant="icon" size="icon-sm" className="hidden sm:flex">
-                            <Bell size={17} />
-                        </Button>
 
                         {/* Theme toggle */}
                         <Button

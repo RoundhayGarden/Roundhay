@@ -242,24 +242,8 @@ function MovieCard({ movie }) {
         <article
             className="group cursor-pointer overflow-hidden rounded-lg border border-border bg-card"
             onClick={() => {
-                if (!movie?.id || !isMovie) return;
-                navigate(`/movie/${movie.id}`, {
-                    state: {
-                        movie: {
-                            id: movie.id,
-                            title: movie.title,
-                            poster_path: movie.poster_path,
-                            backdrop_path: movie.backdrop_path,
-                            vote_average: movie.vote_average,
-                            overview: movie.overview,
-                            release_date: movie.release_date,
-                        },
-                    },
-                });
-            }}
-            onKeyDown={(event) => {
-                if ((event.key === 'Enter' || event.key === ' ') && movie?.id && isMovie) {
-                    event.preventDefault();
+                if (!movie?.id) return;
+                if (isMovie) {
                     navigate(`/movie/${movie.id}`, {
                         state: {
                             movie: {
@@ -270,6 +254,55 @@ function MovieCard({ movie }) {
                                 vote_average: movie.vote_average,
                                 overview: movie.overview,
                                 release_date: movie.release_date,
+                            },
+                        },
+                    });
+                    return;
+                }
+
+                navigate(`/series/details/${movie.id}`, {
+                    state: {
+                        series: {
+                            id: movie.id,
+                            name: movie.name,
+                            poster_path: movie.poster_path,
+                            backdrop_path: movie.backdrop_path,
+                            vote_average: movie.vote_average,
+                            overview: movie.overview,
+                            first_air_date: movie.first_air_date,
+                        },
+                    },
+                });
+            }}
+            onKeyDown={(event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && movie?.id) {
+                    event.preventDefault();
+                    if (isMovie) {
+                        navigate(`/movie/${movie.id}`, {
+                            state: {
+                                movie: {
+                                    id: movie.id,
+                                    title: movie.title,
+                                    poster_path: movie.poster_path,
+                                    backdrop_path: movie.backdrop_path,
+                                    vote_average: movie.vote_average,
+                                    overview: movie.overview,
+                                    release_date: movie.release_date,
+                                },
+                            },
+                        });
+                        return;
+                    }
+                    navigate(`/series/details/${movie.id}`, {
+                        state: {
+                            series: {
+                                id: movie.id,
+                                name: movie.name,
+                                poster_path: movie.poster_path,
+                                backdrop_path: movie.backdrop_path,
+                                vote_average: movie.vote_average,
+                                overview: movie.overview,
+                                first_air_date: movie.first_air_date,
                             },
                         },
                     });
@@ -309,8 +342,8 @@ function MovieCard({ movie }) {
                 </div>
             </div>
             <div className="p-3">
-                <h2 className="font-medium text-card-foreground">{title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">{releaseDate}</p>
+                <h2 className="line-clamp-1 min-h-[20px] text-sm font-medium text-card-foreground">{title}</h2>
+                <p className="mt-1 line-clamp-1 min-h-[16px] text-xs text-muted-foreground">{releaseDate}</p>
             </div>
         </article>
     );
