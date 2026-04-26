@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import SectionSlider from '../components/discovery/SectionSlider';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -142,7 +143,7 @@ export default function Collection() {
                                 Browse movies and click the bookmark icon to save them here
                             </p>
                             <Button variant="gradient" asChild>
-                                <a href="/movies">Browse Movies</a>
+                                <Link to="/movies/popular">Browse Movies</Link>
                             </Button>
                         </div>
                     )}
@@ -161,6 +162,7 @@ export default function Collection() {
                             title="Trending Now"
                             movies={sections.recent}
                             showSeeMore
+                            seeMorePath="/movies/trending"
                             sliderId="coll-trending"
                         />
                     </div>
@@ -179,6 +181,7 @@ export default function Collection() {
                             title="Top Rated"
                             movies={sections.topRated}
                             showSeeMore
+                            seeMorePath="/movies/top_rated"
                             sliderId="coll-toprated"
                         />
                     </div>
@@ -207,7 +210,9 @@ export default function Collection() {
                     Discover new movies, create custom lists, and never lose track of what you want to watch
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 relative z-10">
-                    <Button variant="gradient" size="lg">Browse Movies</Button>
+                    <Button variant="gradient" size="lg" asChild>
+                        <Link to="/movies/popular">Browse Movies</Link>
+                    </Button>
                     <Button variant="outline" size="lg">View Stats</Button>
                 </div>
             </div>

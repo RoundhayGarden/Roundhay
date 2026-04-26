@@ -15,6 +15,7 @@ import {
 import SearchInput from "../components/SearchInput"
 import Spinner from "../components/Spinner"
 import VoteProgress from "../components/VoteProgress"
+import { useAppStore } from "../store/useAppStore"
 import {
   attachPosters,
   mergeUniqueById,
@@ -40,6 +41,8 @@ const Series = () => {
   const [error, setError] = useState("")
   const loadMoreRef = useRef(null)
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 500)
+  const toggleWishlist = useAppStore((state) => state.toggleWishlist)
+  const isInWishlist = useAppStore((state) => state.isInWishlist)
 
   const activeTab = useMemo(
     () => TAB_CONFIG.find((item) => item.key === tab) ?? TAB_CONFIG[0],
@@ -150,43 +153,52 @@ const Series = () => {
       {shows.length > 0 && (
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {shows.map((show) => (
-              <article
-                key={show.id}
-                className="group overflow-hidden rounded-lg border border-border bg-card"
-              >
-                <div className="relative aspect-2/3 w-full bg-muted">
-                  {show.posterPath ? (
-                    <img
-                      src={`${TMDB_IMAGE_BASE_URL}${show.posterPath}`}
-                      alt={show.name}
-                      className="h-full w-full object-cover transition duration-300 group-hover:brightness-50"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                      No Poster
+            {shows.map((show) => {
+              const wishlisted = isInWishlist(show.id)
+
+              return (
+                <article
+                  key={show.id}
+                  className="group overflow-hidden rounded-lg border border-border bg-card"
+                >
+                  <div className="relative aspect-2/3 w-full bg-muted">
+                    {show.posterPath ? (
+                      <img
+                        src={`${TMDB_IMAGE_BASE_URL}${show.posterPath}`}
+                        alt={show.name}
+                        className="h-full w-full object-cover transition duration-300 group-hover:brightness-50"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                        No Poster
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                      onClick={() => toggleWishlist(show)}
+                      className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
+                        wishlisted
+                          ? "text-accent opacity-100"
+                          : "text-foreground opacity-0 group-hover:opacity-100"
+                      }`}
+                    >
+                      <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
+                    </button>
+
+                    <div className="pointer-events-none absolute bottom-2 left-2 opacity-0 transition duration-300 group-hover:opacity-100">
+                      <VoteProgress voteAverage={show.vote_average} />
                     </div>
-                  )}
-
-                  <button
-                    type="button"
-                    aria-label="Add to wishlist"
-                    className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-foreground opacity-0 shadow transition duration-300 group-hover:opacity-100"
-                  >
-                    <Heart size={16} />
-                  </button>
-
-                  <div className="pointer-events-none absolute bottom-2 left-2 opacity-0 transition duration-300 group-hover:opacity-100">
-                    <VoteProgress voteAverage={show.vote_average} />
                   </div>
-                </div>
-                <div className="p-3">
-                  <h2 className="font-medium text-card-foreground">{show.name}</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">{show.first_air_date || "N/A"}</p>
-                </div>
-              </article>
-            ))}
+                  <div className="p-3">
+                    <h2 className="font-medium text-card-foreground">{show.name}</h2>
+                    <p className="mt-1 text-xs text-muted-foreground">{show.first_air_date || "N/A"}</p>
+                  </div>
+                </article>
+              )
+            })}
           </div>
 
           {page < totalPages && <div ref={loadMoreRef} className="h-1" />}

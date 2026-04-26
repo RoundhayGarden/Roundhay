@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Loader2, Star, X, Flame, Clock, Trash2, BookmarkCheck, Bookmark } from 'lucide-react';
+import { Search, Star, X, Flame, Clock, Trash2, BookmarkCheck, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MovieCardSkeleton } from '@/components/ui/skeleton';
 import { useAppStore } from '@/store/useAppStore';
 import useDebounce from '../hooks/useDebounce';
-import { fetchSearch, getImageUrl } from '../services/tmdb';
+import { getImageUrl, searchMovies } from '../services/tmdb';
+import { searchTv } from '../../services/seriesApi';
 import { cn } from '@/lib/utils';
 
 const TRENDING_TAGS = ['Avengers', 'Inception', 'Interstellar', 'Dune', 'Oppenheimer', 'Parasite'];
@@ -36,8 +36,26 @@ export default function SearchResults() {
         if (debouncedQuery) {
             setLoading(true);
             addToHistory(debouncedQuery);
-            fetchSearch(debouncedQuery)
-                .then(res => { setResults(res.data.results); setLoading(false); })
+            Promise.all([
+                searchMovies(debouncedQuery),
+                searchTv(debouncedQuery),
+            ])
+                .then(([moviesData, tvData]) => {
+                    const movieResults = (moviesData?.results || []).map(item => ({
+                        ...item,
+                        media_type: 'movie',
+                    }));
+                    const tvResults = (tvData?.results || []).map(item => ({
+                        ...item,
+                        media_type: 'tv',
+                    }));
+
+                    const mergedResults = [...movieResults, ...tvResults].sort(
+                        (a, b) => (b.popularity || 0) - (a.popularity || 0)
+                    );
+                    setResults(mergedResults);
+                    setLoading(false);
+                })
                 .catch(() => { setResults([]); setLoading(false); });
         } else {
             setResults([]);

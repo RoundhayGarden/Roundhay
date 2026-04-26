@@ -15,6 +15,7 @@ import {
 import SearchInput from "../components/SearchInput"
 import Spinner from "../components/Spinner"
 import VoteProgress from "../components/VoteProgress"
+import { useAppStore } from "../store/useAppStore"
 import {
   attachPosters,
   mergeUniqueById,
@@ -40,6 +41,8 @@ const Movies = () => {
   const [error, setError] = useState("")
   const loadMoreRef = useRef(null)
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 500)
+  const toggleWishlist = useAppStore((state) => state.toggleWishlist)
+  const isInWishlist = useAppStore((state) => state.isInWishlist)
 
   const activeTab = useMemo(
     () => TAB_CONFIG.find((item) => item.key === tab) ?? TAB_CONFIG[0],
@@ -154,6 +157,8 @@ const Movies = () => {
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {movies.map((movie) => {
+              const wishlisted = isInWishlist(movie.id)
+
               return (
                 <article
                   key={movie.id}
@@ -175,10 +180,15 @@ const Movies = () => {
 
                     <button
                       type="button"
-                      aria-label="Add to wishlist"
-                      className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-foreground opacity-0 shadow transition duration-300 group-hover:opacity-100"
+                      aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                      onClick={() => toggleWishlist(movie)}
+                      className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
+                        wishlisted
+                          ? "text-accent opacity-100"
+                          : "text-foreground opacity-0 group-hover:opacity-100"
+                      }`}
                     >
-                      <Heart size={16} />
+                      <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
                     </button>
 
                     <div className="pointer-events-none absolute bottom-2 left-2 opacity-0 transition duration-300 group-hover:opacity-100">
