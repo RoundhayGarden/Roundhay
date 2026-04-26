@@ -115,7 +115,7 @@ export default function HeroBanner() {
 
     return (
         <div
-            className="relative w-full h-screen overflow-hidden"
+            className="relative h-screen w-screen max-w-none overflow-hidden"
             style={{ background: 'var(--background)', fontFamily: "'Outfit','Inter Variable',sans-serif" }}
         >
             {/* ── Background prev (fade-out) ── */}

@@ -104,7 +104,7 @@ export default function Home() {
             <HeroBanner />
 
             {/* Main Content */}
-            <div className="space-y-2 px-6 md:px-14 mt-10">
+            <div className="mx-auto mt-10 w-full max-w-[1800px] space-y-2 px-4 sm:px-6 md:px-14">
 
                 {/* Trending */}
                 <AnimatedSection delay={0} isLoaded={isLoaded}>

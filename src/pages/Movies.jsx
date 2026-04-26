@@ -113,7 +113,7 @@ const Movies = () => {
   })
 
   return (
-    <section className="space-y-4">
+    <section className="relative z-0 mx-auto w-full max-w-[1800px] space-y-4 px-6 pt-28 lg:px-12 sm:pt-32">
       <h1 className="text-2xl font-semibold text-foreground">Movies</h1>
 
       <div className="flex flex-wrap gap-2">

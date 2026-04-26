@@ -65,7 +65,11 @@ export default function SectionSlider({
               : `/search?query=${encodeURIComponent(title ?? '')}`;
 
     return (
-        <div className="py-8" style={{ fontFamily: "'Outfit', 'Inter Variable', sans-serif" }}>
+        <section
+            className="w-full max-w-full overflow-x-hidden py-8"
+            style={{ fontFamily: "'Outfit', 'Inter Variable', sans-serif" }}
+        >
+            <div className="w-full px-6 md:px-12">
 
             {/* ── Section header ── */}
             {title && (
@@ -145,7 +149,7 @@ export default function SectionSlider({
 
             {/* ── Slider ── */}
             {!loading && (
-                <div className="relative">
+                <div className="relative overflow-hidden">
                     <Swiper
                         modules={[Navigation]}
                         navigation={{
@@ -166,7 +170,7 @@ export default function SectionSlider({
                             1280: { slidesPerView: 6.3, spaceBetween: 20 },
                             1600: { slidesPerView: 7.3, spaceBetween: 20 },
                         }}
-                        className="overflow-visible!"
+                        className="w-full overflow-hidden"
                     >
                         {displayMovies.map((movie, idx) => (
                             <SwiperSlide key={`${movie.id}-${idx}`} className="cursor-pointer">
@@ -178,7 +182,8 @@ export default function SectionSlider({
                     {/* Custom nav buttons */}
                     <button
                         ref={prevRef}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 group"
+                        type="button"
+                        className="absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
                         style={{
                             background: 'var(--glass)',
                             border: '1px solid var(--glass-border)',
@@ -198,7 +203,8 @@ export default function SectionSlider({
                     </button>
                     <button
                         ref={nextRef}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                        type="button"
+                        className="absolute right-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110"
                         style={{
                             background: 'var(--glass)',
                             border: '1px solid var(--glass-border)',
@@ -218,7 +224,8 @@ export default function SectionSlider({
                     </button>
                 </div>
             )}
-        </div>
+            </div>
+        </section>
     );
 }
 
