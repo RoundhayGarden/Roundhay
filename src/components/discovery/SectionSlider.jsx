@@ -127,7 +127,7 @@ export default function SectionSlider({
             })}
 
             {/* Pagination */}
-            <div className="flex items-center gap-1 ml-auto">
+            <div className="hidden md:flex items-center gap-1 ml-auto">
               <Button
                 variant="icon"
                 size="icon-sm"
@@ -198,7 +198,7 @@ export default function SectionSlider({
             <button
               ref={prevRef}
               type="button"
-              className="absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
+              className="absolute left-2 top-1/2 z-20 hidden md:flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
               style={{
                 background: "var(--glass)",
                 border: "1px solid var(--glass-border)",
@@ -219,7 +219,7 @@ export default function SectionSlider({
             <button
               ref={nextRef}
               type="button"
-              className="absolute right-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+              className="absolute right-2 top-1/2 z-20 hidden md:flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110"
               style={{
                 background: "var(--glass)",
                 border: "1px solid var(--glass-border)",
@@ -326,11 +326,10 @@ function MovieCard({ movie }) {
           type="button"
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
           onClick={(event) => handleToggleWishlist(movie, event)}
-          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
-            wishlisted
+          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${wishlisted
               ? "text-accent opacity-100"
               : "text-foreground opacity-100 xl:opacity-0 xl:group-hover:opacity-100"
-          }`}
+            }`}
         >
           <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
         </button>

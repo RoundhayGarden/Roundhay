@@ -247,7 +247,18 @@ export default function HeroBanner() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to top, var(--background) 0%, transparent 40%)",
+              "linear-gradient(to top, #2c3333 0%, transparent 95%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 md:hidden bg-black/60 z-[5]"
+        />
+        <div
+          className="absolute inset-0 md:hidden"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, transparent 100%)",
+            zIndex: 6
           }}
         />
         <div
@@ -279,37 +290,36 @@ export default function HeroBanner() {
         ))}
       </div>
 
-      {/* ── Poster (right) ── */}
-      <div className="absolute right-0 top-0 h-full w-1/2 z-10 flex items-center justify-end pointer-events-none">
+      {/* ── Poster (right/center on mobile) ── */}
+      <div className="absolute inset-0 md:inset-auto md:right-0 md:top-0 h-full w-full md:w-1/2 z-10 flex items-center justify-center md:justify-end pointer-events-none">
         {/* Glow */}
         <div
           key={`glow-${activeIndex}`}
-          className="absolute"
+          className="absolute opacity-60 md:opacity-100"
           style={{
-            right: "8rem",
-            width: "340px",
-            height: "510px",
+            right: "auto",
+            width: "300px",
+            height: "450px",
             background:
               "radial-gradient(ellipse, var(--movie-accent) 0%, transparent 70%)",
             animation: "glowPulseBig 3s ease-in-out infinite",
             filter: "blur(30px)",
-            transform: "scale(1.4)",
+            transform: "scale(1.6)",
           }}
         />
 
         {/* Previous poster exits */}
         {prev && (
           <div
-            className="absolute"
+            className="absolute flex items-center justify-center"
             style={{
-              right: "8rem",
               animation:
                 direction === "next"
                   ? "posterExitLeft 0.7s cubic-bezier(0.4,0,0.2,1) forwards"
                   : "posterExitRight 0.7s cubic-bezier(0.4,0,0.2,1) forwards",
             }}
           >
-            <div className="w-[300px] md:w-[340px] h-[450px] md:h-[510px] rounded-3xl overflow-hidden shadow-2xl">
+            <div className="w-[260px] sm:w-[300px] md:w-[340px] h-[390px] sm:h-[450px] md:h-[510px] rounded-3xl overflow-hidden shadow-2xl opacity-40">
               <img
                 src={getImageUrl(prev.poster_path, "w500")}
                 alt=""
@@ -322,9 +332,8 @@ export default function HeroBanner() {
         {/* Current poster enters */}
         <div
           key={`poster-${activeIndex}`}
-          className="absolute"
+          className="absolute md:right-32 flex items-center justify-center"
           style={{
-            right: "8rem",
             animation:
               direction === "next"
                 ? "posterEnterRight 0.9s cubic-bezier(0.16,1,0.3,1) forwards"
@@ -334,7 +343,7 @@ export default function HeroBanner() {
           <div className="relative">
             {/* Stacked cards behind */}
             <div
-              className="absolute -left-5 -top-3 w-[300px] md:w-[340px] h-[450px] md:h-[510px] rounded-3xl overflow-hidden opacity-25 rotate-[-5deg]"
+              className="absolute -left-5 -top-3 w-[260px] sm:w-[300px] md:w-[340px] h-[390px] sm:h-[450px] md:h-[510px] rounded-3xl overflow-hidden opacity-25 rotate-[-5deg] hidden sm:block"
               style={{ filter: "blur(2px)" }}
             >
               {movies[(activeIndex + 1) % movies.length]?.poster_path && (
@@ -349,7 +358,7 @@ export default function HeroBanner() {
               )}
             </div>
             <div
-              className="absolute -right-4 -top-2 w-[300px] md:w-[340px] h-[450px] md:h-[510px] rounded-3xl overflow-hidden opacity-15 rotate-[4deg]"
+              className="absolute -right-4 -top-2 w-[260px] sm:w-[300px] md:w-[340px] h-[390px] sm:h-[450px] md:h-[510px] rounded-3xl overflow-hidden opacity-15 rotate-[4deg] hidden sm:block"
               style={{ filter: "blur(3px)" }}
             >
               {movies[(activeIndex + 2) % movies.length]?.poster_path && (
@@ -366,7 +375,7 @@ export default function HeroBanner() {
 
             {/* Main poster */}
             <div
-              className="relative w-[300px] md:w-[340px] h-[450px] md:h-[510px] rounded-3xl overflow-hidden"
+              className="relative w-[260px] sm:w-[300px] md:w-[340px] h-[390px] sm:h-[450px] md:h-[510px] rounded-3xl overflow-hidden mt-[-100px] md:mt-0"
               style={{
                 boxShadow:
                   "0 30px 80px rgba(0,0,0,0.6), 0 0 50px var(--movie-accent)",
@@ -376,7 +385,7 @@ export default function HeroBanner() {
               <img
                 src={getImageUrl(current.poster_path, "w500")}
                 alt={current.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hero-poster-img"
                 style={{
                   animation: "subtleZoom 8s ease-in-out infinite alternate",
                 }}
@@ -385,7 +394,7 @@ export default function HeroBanner() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)",
+                    "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.2) 100%)",
                 }}
               />
             </div>
@@ -393,8 +402,8 @@ export default function HeroBanner() {
         </div>
       </div>
 
-      {/* ── Left content ── */}
-      <div className="relative z-20 h-full flex flex-col justify-center pl-10 md:pl-20 pr-4 max-w-[56%]">
+      {/* ── Left content (Centered on mobile) ── */}
+      <div className="relative z-20 h-full flex flex-col justify-end md:justify-center px-6 pb-60 md:pb-0 md:pl-20 md:pr-4 w-full md:max-w-[56%] items-center md:items-start text-center md:text-left">
         {/* Now Playing badge */}
         <div
           key={`badge-${activeIndex}`}
@@ -402,10 +411,10 @@ export default function HeroBanner() {
         >
           <Badge
             variant="accent"
-            className="mb-5 uppercase tracking-widest text-[10px] px-4 py-1.5"
+            className="mb-4 md:mb-5 uppercase tracking-widest text-[9px] md:text-[10px] px-3 md:px-4 py-1 md:py-1.5 shadow-lg bg-black/40 backdrop-blur-md border-white/10 text-white"
           >
             <span
-              className="w-1.5 h-1.5 rounded-full animate-pulse"
+              className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full animate-pulse mr-2"
               style={{ background: "var(--accent)" }}
             />
             Now Playing
@@ -418,10 +427,10 @@ export default function HeroBanner() {
           style={{ animation: "slideUpFade 0.8s 0.15s ease both" }}
         >
           <h1
-            className="text-5xl md:text-7xl font-black leading-[1.0] mb-4 tracking-tight"
+            className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.1] md:leading-[1.0] mb-3 md:mb-4 tracking-tight"
             style={{
-              color: "var(--foreground)",
-              textShadow: "0 4px 30px rgba(0,0,0,0.4)",
+              color: "#ffffff",
+              textShadow: "0 2px 10px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.6)",
             }}
           >
             {current.title}
@@ -431,14 +440,17 @@ export default function HeroBanner() {
         {/* Meta */}
         <div
           key={`meta-${activeIndex}`}
-          className="flex items-center gap-4 mb-4"
+          className="flex items-center justify-center md:justify-start gap-3 md:gap-4 mb-4"
           style={{ animation: "slideUpFade 0.8s 0.25s ease both" }}
         >
           <div className="flex items-center gap-1.5">
             <Star size={13} fill="#F5C518" color="#F5C518" />
             <span
               className="font-bold text-sm"
-              style={{ color: "var(--foreground)" }}
+              style={{
+                color: "#ffffff",
+                textShadow: "0 1px 4px rgba(0,0,0,1)"
+              }}
             >
               {current.vote_average?.toFixed(1)}
             </span>
@@ -449,7 +461,7 @@ export default function HeroBanner() {
           />
           <span
             className="text-sm"
-            style={{ color: "var(--muted-foreground)" }}
+            style={{ color: "rgba(255,255,255,0.7)" }}
           >
             {current.release_date
               ? new Date(current.release_date).getFullYear()
@@ -466,8 +478,13 @@ export default function HeroBanner() {
           style={{ animation: "slideUpFade 0.8s 0.35s ease both" }}
         >
           <p
-            className="text-base leading-relaxed line-clamp-3 mb-8 max-w-[500px]"
-            style={{ color: "var(--muted-foreground)" }}
+            className="text-sm md:text-base leading-relaxed line-clamp-2 md:line-clamp-3 mb-6 md:mb-8 max-w-[500px]"
+            style={{
+              color: "#ffffff",
+              opacity: 0.95,
+              fontWeight: 500,
+              textShadow: "0 1px 8px rgba(0,0,0,1)"
+            }}
           >
             {current.overview}
           </p>
@@ -476,24 +493,30 @@ export default function HeroBanner() {
         {/* CTA Buttons — Shadcn */}
         <div
           key={`btns-${activeIndex}`}
-          className="flex items-center gap-3"
+          className="flex items-center justify-center md:justify-start gap-2 md:gap-3"
           style={{ animation: "slideUpFade 0.8s 0.45s ease both" }}
         >
           <Button
             variant="gradient"
             size="lg"
-            className="group"
+            className="group px-6 h-11 md:h-12 text-sm md:text-base"
             onClick={handleWatchNow}
           >
             <Play
-              size={17}
+              size={16}
+              md:size={17}
               fill="currentColor"
               className="group-hover:scale-110 transition-transform"
             />
             Watch Now
           </Button>
-          <Button variant="outline" size="lg" onClick={handleMoreInfo}>
-            <Info size={17} />
+          <Button
+            variant="outline"
+            size="lg"
+            className="px-6 h-11 md:h-12 text-sm md:text-base"
+            onClick={handleMoreInfo}
+          >
+            <Info size={16} md:size={17} />
             More Info
           </Button>
           <Button
@@ -502,7 +525,7 @@ export default function HeroBanner() {
             onClick={() => toggleWishlist(current)}
             className={cn(
               wishlisted &&
-                "!bg-accent !text-accent-foreground !border-transparent animate-glow-pulse",
+              "!bg-accent !text-accent-foreground !border-transparent animate-glow-pulse",
             )}
             title={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
           >
@@ -512,7 +535,7 @@ export default function HeroBanner() {
 
         {/* Dot nav */}
         <div
-          className="flex items-center gap-2 mt-10"
+          className="hidden md:flex items-center gap-2 mt-10"
           style={{ animation: "slideUpFade 0.8s 0.55s ease both" }}
         >
           {movies.map((_, i) => (
@@ -536,7 +559,7 @@ export default function HeroBanner() {
         variant="icon"
         size="icon"
         onClick={goPrev}
-        className="absolute left-5 top-1/2 -translate-y-1/2 z-30"
+        className="absolute left-2 md:left-5 top-1/2 -translate-y-1/2 z-30 scale-75 md:scale-100 opacity-50 hover:opacity-100 hidden md:flex"
       >
         <ChevronLeft size={20} />
       </Button>
@@ -544,36 +567,35 @@ export default function HeroBanner() {
         variant="icon"
         size="icon"
         onClick={goNext}
-        className="absolute right-5 top-1/2 -translate-y-1/2 z-30"
+        className="absolute right-2 md:right-5 top-1/2 -translate-y-1/2 z-30 scale-75 md:scale-100 opacity-50 hover:opacity-100 hidden md:flex"
       >
         <ChevronRight size={20} />
       </Button>
 
-      {/* ── Thumbnail strip ── */}
-      <div className="absolute bottom-8 right-8 z-30 flex gap-3">
+      {/* ── Thumbnail strip (Bottom center on mobile) ── */}
+      <div className="absolute bottom-6 left-0 right-0 md:left-auto md:right-8 z-30 flex items-center justify-center md:justify-end gap-2 md:gap-3 px-4">
         {movies.slice(0, 5).map((m, i) => (
           <button
             key={m.id}
             onClick={() => goTo(i, i > activeIndex ? "next" : "prev")}
-            className="relative overflow-hidden"
+            className="relative overflow-hidden group/thumb transition-all duration-400"
             style={{
-              width: i === activeIndex ? "64px" : "48px",
-              height: i === activeIndex ? "96px" : "72px",
+              width: i === activeIndex ? "var(--thumb-active-w)" : "var(--thumb-w)",
+              height: i === activeIndex ? "var(--thumb-active-h)" : "var(--thumb-h)",
               borderRadius: "12px",
-              opacity: i === activeIndex ? 1 : 0.45,
+              opacity: i === activeIndex ? 1 : 0.4,
               border:
                 i === activeIndex
                   ? "2px solid var(--accent)"
-                  : "2px solid transparent",
+                  : "1px solid var(--glass-border)",
               boxShadow:
                 i === activeIndex ? "0 0 20px var(--movie-accent)" : "none",
-              transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
             }}
           >
             <img
               src={getImageUrl(m.poster_path, "w200")}
               alt={m.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-500"
             />
           </button>
         ))}
@@ -627,6 +649,35 @@ export default function HeroBanner() {
       </Dialog>
 
       <style>{`
+                :root {
+                  --thumb-w: 48px;
+                  --thumb-h: 72px;
+                  --thumb-active-w: 64px;
+                  --thumb-active-h: 96px;
+                  --hero-overlay-mobile: rgba(0,0,0,0.4);
+                }
+                .light {
+                  --hero-overlay-mobile: rgba(255,255,255,0.2);
+                }
+
+                @media (max-width: 768px) {
+                  :root {
+                    --thumb-w: 38px;
+                    --thumb-h: 56px;
+                    --thumb-active-w: 52px;
+                    --thumb-active-h: 78px;
+                  }
+                  .hero-poster-img {
+                    opacity: 0.4 !important;
+                    filter: brightness(0.6) contrast(1.1);
+                  }
+                }
+
+                .light .hero-poster-img {
+                    opacity: 0.4 !important;
+                    filter: brightness(0.6) contrast(1.1);
+                }
+
                 @keyframes bgFadeIn  { from{opacity:0} to{opacity:1} }
                 @keyframes bgFadeOut { from{opacity:1} to{opacity:0} }
                 @keyframes posterEnterRight { from{opacity:0;transform:translateX(80px) scale(.92) rotateY(-8deg)} to{opacity:1;transform:translateX(0) scale(1) rotateY(0)} }
