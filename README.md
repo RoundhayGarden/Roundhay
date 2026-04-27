@@ -1,4 +1,4 @@
-# Roundhay 🎬
+# Roundhay
 
 A modern movie and TV series discovery app built with React. Browse trending content, search for films and shows, manage a personal wishlist, and enjoy a smooth experience across all screen sizes.
 
