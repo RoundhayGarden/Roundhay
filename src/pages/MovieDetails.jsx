@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 import { useLocation, useParams } from "react-router-dom"
-
 import SectionSlider from "../components/discovery/SectionSlider"
 import Spinner from "../components/Spinner"
 import {

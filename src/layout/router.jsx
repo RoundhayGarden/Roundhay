@@ -34,7 +34,6 @@ const router = createHashRouter([
 
       { path: "search",              element: <SearchResults /> },
 
-      // ── Protected (must be signed in) ──
       {
         element: <RequireAuth />,
         children: [
