@@ -6,13 +6,14 @@ import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import useTheme from "../../zustand/useTheme";
+import { useAppStore } from "../../store/useAppStore";
 
 const RegisterWell = () => {
   const location = useLocation();
   const isSignUp = location.pathname === "/signup";
   const [showForm, setShowForm] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const theme = useAppStore((s) => s.theme);
+  const toggleTheme = useAppStore((s) => s.toggleTheme);
 
   const [vw, setVw] = useState(window.innerWidth);
   useEffect(() => {
@@ -23,7 +24,7 @@ const RegisterWell = () => {
 
   const isMobile = vw < 640;
   const isTablet = vw >= 640 && vw < 1024;
-  const isTV     = vw >= 1920;
+  const isTV = vw >= 1920;
   const isNarrow = isMobile || isTablet;
 
   useEffect(() => {

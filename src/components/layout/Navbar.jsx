@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search,  User, Sun, Moon, Menu, X, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ export default function Navbar() {
     const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const navigate = useNavigate();
 
     // ── Zustand ──────────────────────────────────────────
     const theme        = useAppStore(s => s.theme);
@@ -136,6 +137,7 @@ export default function Navbar() {
                             variant="gradient"
                             size="icon-sm"
                             className="hidden sm:flex"
+                            onClick={() => navigate("/signin")}
                         >
                             <User size={17} />
                         </Button>
