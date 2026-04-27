@@ -1,4 +1,5 @@
 import axios from "axios"
+import { getMovieDetails } from "./tmdb"
 
 const TMDB_BASE_URL = import.meta.env.VITE_TMDB_BASE_URL || "https://api.themoviedb.org/3"
 const TMDB_BEARER_TOKEN = import.meta.env.VITE_TMDB_BEARER_TOKEN
@@ -75,6 +76,39 @@ export const signInUser = async ({ email, password }) => {
 }
 
 
+/** Resolve TMDB id stored as tmdb_movie_id — may be a movie or a TV show. */
+async function getDetailsForWishlistId(tmdbId) {
+  try {
+    const movie = await getMovieDetails(tmdbId)
+    if (movie?.id) {
+      return {
+        name: movie.title,
+        overview: movie.overview,
+        poster_path: movie.poster_path,
+        vote_average: movie.vote_average,
+        airOrReleaseDate: movie.release_date,
+      }
+    }
+  } catch {
+    /* not a movie or request failed */
+  }
+  try {
+    const tv = await getTvDetails(tmdbId)
+    if (tv?.id) {
+      return {
+        name: tv.name,
+        overview: tv.overview,
+        poster_path: tv.poster_path,
+        vote_average: tv.vote_average,
+        airOrReleaseDate: tv.first_air_date,
+      }
+    }
+  } catch {
+    /* not TV */
+  }
+  return null
+}
+
 export const getUserWishlist = async (userId) => {
   const { data: wishlistRows } = await wishlistApi.get("/", {
     params: { user_id: userId },
@@ -82,23 +116,19 @@ export const getUserWishlist = async (userId) => {
 
   const enriched = await Promise.all(
     wishlistRows.map(async (row) => {
-      try {
-        const details = await getTvDetails(row.tmdb_movie_id)
-        return {
-          wishlistId:  row.id,
-          tmdbId:      row.tmdb_movie_id,
-          name:        details.name,
-          overview:    details.overview,
-          poster_path: details.poster_path
-            ? `${TMDB_IMAGE_BASE_URL}${details.poster_path}`
-            : null,
-          vote_average: details.vote_average,
-          first_air_date: details.first_air_date,
-        }
-      } catch {
-        return null
+      const details = await getDetailsForWishlistId(row.tmdb_movie_id)
+      if (!details) return null
+      return {
+        wishlistId: row.id,
+        tmdbId: row.tmdb_movie_id,
+        name: details.name,
+        overview: details.overview,
+        // Relative path so Collection/WishlistCard can use getImageUrl(...)
+        poster_path: details.poster_path,
+        vote_average: details.vote_average,
+        first_air_date: details.airOrReleaseDate,
       }
-    })
+    }),
   )
 
   return enriched.filter(Boolean)

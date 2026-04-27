@@ -16,6 +16,13 @@ export default function Collection() {
     const wishlist         = useAppStore(s => s.wishlist);
     const removeFromWishlist = useAppStore(s => s.removeFromWishlist);
     const toggleWishlist   = useAppStore(s => s.toggleWishlist);
+    const syncWishlistFromRetool = useAppStore(s => s.syncWishlistFromRetool);
+
+    useEffect(() => {
+        if (localStorage.getItem('user')) {
+            syncWishlistFromRetool();
+        }
+    }, [syncWishlistFromRetool]);
 
     useEffect(() => {
         Promise.all([
