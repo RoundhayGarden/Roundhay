@@ -44,7 +44,7 @@ const Movies = () => {
   const loadMoreRef = useRef(null)
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 500)
   const handleToggleWishlist = useWishlistToggle()
-  const isInWishlist = useAppStore((state) => state.isInWishlist)
+  const wishlist = useAppStore((state) => state.wishlist)
 
   const activeTab = useMemo(
     () => TAB_CONFIG.find((item) => item.key === tab) ?? TAB_CONFIG[0],
@@ -175,7 +175,7 @@ const Movies = () => {
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {movies.map((movie) => {
-              const wishlisted = isInWishlist(movie.id)
+              const wishlisted = wishlist.some((m) => m.id === movie.id)
 
               return (
                 <article

@@ -365,8 +365,9 @@ function SearchCard({ movie, index }) {
   const [hovered, setHovered] = useState(false);
 
   const toggleWishlist = useAppStore((s) => s.toggleWishlist);
-  const isInWishlist = useAppStore((s) => s.isInWishlist);
-  const wishlisted = isInWishlist(movie.id);
+  const wishlisted = useAppStore((s) =>
+    s.wishlist.some((m) => m.id === movie.id),
+  );
 
   return (
     <div

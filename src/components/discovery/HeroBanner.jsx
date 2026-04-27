@@ -41,9 +41,14 @@ export default function HeroBanner() {
   const [activeVideo, setActiveVideo] = useState(null);
   const intervalRef = useRef(null);
 
-  // ── Zustand ──────────────────────────────────────
+  // ── Zustand (subscribe to membership boolean — `isInWishlist` fn ref never changes, so no re-renders)
   const toggleWishlist = useAppStore((s) => s.toggleWishlist);
-  const isInWishlist = useAppStore((s) => s.isInWishlist);
+  const activeMovieId = movies[activeIndex]?.id ?? null;
+  const wishlisted = useAppStore(
+    (s) =>
+      activeMovieId != null &&
+      s.wishlist.some((m) => m.id === activeMovieId),
+  );
 
   useEffect(() => {
     fetchNowPlaying()
@@ -98,7 +103,6 @@ export default function HeroBanner() {
 
   const current = movies[activeIndex];
   const prev = prevIndex !== null ? movies[prevIndex] : null;
-  const wishlisted = isInWishlist(current.id);
 
   const getPreferredVideo = (videos = []) => {
     const youtubeVideos = videos.filter(
