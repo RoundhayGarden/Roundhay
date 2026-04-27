@@ -592,10 +592,10 @@ export default function HeroBanner() {
       >
         <DialogContent className="overflow-hidden">
           <DialogHeader>
-            <DialogTitle>{current.title || current.name}</DialogTitle>
-            <DialogDescription>
+            {/* <DialogTitle>{current.title || current.name}</DialogTitle> */}
+            {/* <DialogDescription>
               {activeVideo?.name || "Official trailer and videos"}
-            </DialogDescription>
+            </DialogDescription> */}
           </DialogHeader>
 
           <div className="aspect-video w-full bg-black">
