@@ -1,77 +1,90 @@
-import { useEffect, useMemo, useState } from "react"
-import { useLocation, useParams } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 
-import SectionSlider from "../components/discovery/SectionSlider"
-import Spinner from "../components/Spinner"
-import { TMDB_IMAGE_BASE_URL, getSimilarTv, getTvDetails, getTvVideos } from "../../services/seriesApi"
+import SectionSlider from "../components/discovery/SectionSlider";
+import Spinner from "../components/Spinner";
+import {
+  TMDB_IMAGE_BASE_URL,
+  getSimilarTv,
+  getTvDetails,
+  getTvVideos,
+} from "../services/seriesApi";
 
 const formatRuntime = (runtimeList) => {
-  const minutes = Array.isArray(runtimeList) ? runtimeList[0] : runtimeList
-  if (!minutes || Number.isNaN(minutes)) return "N/A"
-  const hrs = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hrs}h ${mins}m`
-}
+  const minutes = Array.isArray(runtimeList) ? runtimeList[0] : runtimeList;
+  if (!minutes || Number.isNaN(minutes)) return "N/A";
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hrs}h ${mins}m`;
+};
 
 const SeriesDetails = () => {
-  const { id } = useParams()
-  const { state } = useLocation()
-  const previewSeries = state?.series
-  const [seriesData, setSeriesData] = useState(null)
-  const [similarSeries, setSimilarSeries] = useState([])
-  const [trailerUrl, setTrailerUrl] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
+  const { id } = useParams();
+  const { state } = useLocation();
+  const previewSeries = state?.series;
+  const [seriesData, setSeriesData] = useState(null);
+  const [similarSeries, setSimilarSeries] = useState([]);
+  const [trailerUrl, setTrailerUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     const loadSeriesDetails = async () => {
-      setIsLoading(true)
-      setError("")
+      setIsLoading(true);
+      setError("");
 
       try {
         const [details, videos, similar] = await Promise.all([
           getTvDetails(id),
           getTvVideos(id),
           getSimilarTv(id),
-        ])
+        ]);
         const trailer = videos?.results?.find(
           (video) =>
             video.site?.toLowerCase() === "youtube" &&
             video.type?.toLowerCase() === "trailer" &&
-            video.key
-        )
+            video.key,
+        );
 
         if (isMounted) {
-          setSeriesData(details)
-          setTrailerUrl(trailer ? `https://www.youtube.com/embed/${trailer.key}` : "")
-          setSimilarSeries((similar?.results || []).filter((item) => String(item.id) !== String(id)))
+          setSeriesData(details);
+          setTrailerUrl(
+            trailer ? `https://www.youtube.com/embed/${trailer.key}` : "",
+          );
+          setSimilarSeries(
+            (similar?.results || []).filter(
+              (item) => String(item.id) !== String(id),
+            ),
+          );
         }
       } catch {
         if (isMounted) {
-          setError("Failed to load series details.")
+          setError("Failed to load series details.");
         }
       } finally {
         if (isMounted) {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
-    }
+    };
 
-    loadSeriesDetails()
+    loadSeriesDetails();
     return () => {
-      isMounted = false
-    }
-  }, [id])
+      isMounted = false;
+    };
+  }, [id]);
 
   const details = useMemo(() => {
-    const source = seriesData || previewSeries
-    const posterPath = source?.poster_path || source?.posterPath || null
-    const backdropPath = source?.backdrop_path || source?.backdropPath || posterPath
-    const genres = source?.genres?.map((genre) => genre.name).filter(Boolean) || []
-    const seasons = source?.number_of_seasons ?? "N/A"
-    const episodes = source?.number_of_episodes ?? "N/A"
+    const source = seriesData || previewSeries;
+    const posterPath = source?.poster_path || source?.posterPath || null;
+    const backdropPath =
+      source?.backdrop_path || source?.backdropPath || posterPath;
+    const genres =
+      source?.genres?.map((genre) => genre.name).filter(Boolean) || [];
+    const seasons = source?.number_of_seasons ?? "N/A";
+    const episodes = source?.number_of_episodes ?? "N/A";
 
     return {
       title: source?.name || source?.title || "Untitled Series",
@@ -87,17 +100,19 @@ const SeriesDetails = () => {
       episodes,
       companies: source?.production_companies?.slice(0, 6) || [],
       posterSrc: posterPath ? `${TMDB_IMAGE_BASE_URL}${posterPath}` : null,
-      backdropSrc: backdropPath ? `${TMDB_IMAGE_BASE_URL}${backdropPath}` : null,
+      backdropSrc: backdropPath
+        ? `${TMDB_IMAGE_BASE_URL}${backdropPath}`
+        : null,
       trailerUrl,
-    }
-  }, [previewSeries, seriesData, trailerUrl])
+    };
+  }, [previewSeries, seriesData, trailerUrl]);
 
   useEffect(() => {
-    document.title = `${details.title} | Roundhay`
+    document.title = `${details.title} | Roundhay`;
     return () => {
-      document.title = "Roundhay — Discover Movies & Series"
-    }
-  }, [details.title])
+      document.title = "Roundhay — Discover Movies & Series";
+    };
+  }, [details.title]);
 
   return (
     <section className="w-full pt-18 text-foreground sm:pt-20 ">
@@ -116,7 +131,11 @@ const SeriesDetails = () => {
         <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-start gap-5 px-5 py-8 text-left lg:py-12">
           <div className="w-full max-w-[260px] overflow-hidden rounded-2xl border border-white/25 bg-card/70 shadow-2xl">
             {details.posterSrc ? (
-              <img src={details.posterSrc} alt={details.title} className="h-full w-full object-cover" />
+              <img
+                src={details.posterSrc}
+                alt={details.title}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="flex aspect-2/3 items-center justify-center text-sm text-muted-foreground">
                 No Poster
@@ -129,10 +148,14 @@ const SeriesDetails = () => {
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300 text-xs font-semibold text-cyan-200">
                 {details.rating}
               </span>
-              <h1 className="text-3xl font-semibold md:text-4xl">{details.title}</h1>
+              <h1 className="text-3xl font-semibold md:text-4xl">
+                {details.title}
+              </h1>
             </div>
 
-            <p className="max-w-3xl text-sm italic text-cyan-100/90">{details.tagline}</p>
+            <p className="max-w-3xl text-sm italic text-cyan-100/90">
+              {details.tagline}
+            </p>
 
             {isLoading && (
               <div className="rounded-lg border border-white/15 bg-black/40 p-3">
@@ -148,31 +171,49 @@ const SeriesDetails = () => {
 
             <div className="grid max-w-4xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-lg border border-white/15 bg-white/5 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-white/60">Status</p>
+                <p className="text-[11px] uppercase tracking-wide text-white/60">
+                  Status
+                </p>
                 <p className="mt-1 text-sm font-medium">{details.status}</p>
               </div>
               <div className="rounded-lg border border-white/15 bg-white/5 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-white/60">First Air Date</p>
-                <p className="mt-1 text-sm font-medium">{details.firstAirDate}</p>
+                <p className="text-[11px] uppercase tracking-wide text-white/60">
+                  First Air Date
+                </p>
+                <p className="mt-1 text-sm font-medium">
+                  {details.firstAirDate}
+                </p>
               </div>
               <div className="rounded-lg border border-white/15 bg-white/5 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-white/60">Episode Runtime</p>
+                <p className="text-[11px] uppercase tracking-wide text-white/60">
+                  Episode Runtime
+                </p>
                 <p className="mt-1 text-sm font-medium">{details.runtime}</p>
               </div>
               <div className="rounded-lg border border-white/15 bg-white/5 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-white/60">Language</p>
+                <p className="text-[11px] uppercase tracking-wide text-white/60">
+                  Language
+                </p>
                 <p className="mt-1 text-sm font-medium">{details.language}</p>
               </div>
             </div>
 
             <div className="grid max-w-2xl gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-white/15 bg-white/5 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-white/60">Seasons</p>
-                <p className="mt-1 text-sm font-medium text-emerald-300">{details.seasons}</p>
+                <p className="text-[11px] uppercase tracking-wide text-white/60">
+                  Seasons
+                </p>
+                <p className="mt-1 text-sm font-medium text-emerald-300">
+                  {details.seasons}
+                </p>
               </div>
               <div className="rounded-lg border border-white/15 bg-white/5 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-white/60">Episodes</p>
-                <p className="mt-1 text-sm font-medium text-emerald-300">{details.episodes}</p>
+                <p className="text-[11px] uppercase tracking-wide text-white/60">
+                  Episodes
+                </p>
+                <p className="mt-1 text-sm font-medium text-emerald-300">
+                  {details.episodes}
+                </p>
               </div>
             </div>
 
@@ -189,7 +230,9 @@ const SeriesDetails = () => {
 
             <div>
               <h2 className="text-2xl font-medium">Overview</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-white/90">{details.overview}</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-white/90">
+                {details.overview}
+              </p>
             </div>
           </div>
         </div>
@@ -226,14 +269,18 @@ const SeriesDetails = () => {
                   key={company.id}
                   className="rounded-lg border border-border bg-card/70 p-4 backdrop-blur"
                 >
-                  <p className="font-medium text-card-foreground">{company.name}</p>
+                  <p className="font-medium text-card-foreground">
+                    {company.name}
+                  </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {company.origin_country || "Unknown country"}
                   </p>
                 </article>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No production companies available.</p>
+              <p className="text-sm text-muted-foreground">
+                No production companies available.
+              </p>
             )}
           </div>
         </div>
@@ -250,7 +297,7 @@ const SeriesDetails = () => {
         )}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default SeriesDetails
+export default SeriesDetails;

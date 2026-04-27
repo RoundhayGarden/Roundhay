@@ -1,4 +1,4 @@
-import { createHashRouter, Navigate } from "react-router-dom";
+import { createHashRouter, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "./MainLayout";
 import Home from "../pages/Home";
 import Movies from "../pages/Movies";
@@ -10,39 +10,44 @@ import SeriesDetails from "../pages/SeriesDetails";
 import NotFound from "../pages/NotFound";
 import SignIntoUp from "../pages/SignIntoUp";
 
-const router = createHashRouter(
-  [
-    {
-      path: "/",
-      element: <MainLayout />,
-      children: [
-        { index: true, element: <Home /> },
-        { path: "movies", element: <Navigate to="/movies/popular" replace /> },
-        { path: "movies/:tab", element: <Movies /> },
-        { path: "movie/:id", element: <MovieDetails /> },
-        {
-          path: "series",
-          element: <Navigate to="/series/airing_today" replace />,
-        },
-        { path: "series/:tab", element: <Series /> },
-        { path: "series/details/:id", element: <SeriesDetails /> },
-        { path: "collection", element: <Collection /> },
-        { path: "search", element: <SearchResults /> },
-        { path: "*", element: <Navigate to="/" replace /> },
-      ],
-    },
-    {
-      path: "/signin",
-      element: <SignIntoUp />,
-    },
-    {
-      path: "/signup",
-      element: <SignIntoUp />,
-    },
-    {
-      path: "*",
-      element: <NotFound />,
-    },
-  ],
-);
+// Reads user from localStorage — if missing, redirect to /signin
+const RequireAuth = () => {
+  const user = localStorage.getItem("user");
+  if (!user) return <Navigate to="/signin" replace />;
+  return <Outlet />;
+};
+
+const router = createHashRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <Home /> },
+
+      // ── Public ──
+      { path: "movies",              element: <Navigate to="popular" replace /> },
+      { path: "movies/:tab",         element: <Movies /> },
+      { path: "movie/:id",           element: <MovieDetails /> },
+
+      { path: "series",              element: <Navigate to="airing_today" replace /> },
+      { path: "series/:tab",         element: <Series /> },
+      { path: "series/details/:id",  element: <SeriesDetails /> },
+
+      { path: "search",              element: <SearchResults /> },
+
+      // ── Protected (must be signed in) ──
+      {
+        element: <RequireAuth />,
+        children: [
+          { path: "collection", element: <Collection /> },
+        ],
+      },
+
+      { path: "*", element: <NotFound /> },
+    ],
+  },
+  { path: "/signin", element: <SignIntoUp /> },
+  { path: "/signup", element: <SignIntoUp /> },
+]);
+
 export default router;

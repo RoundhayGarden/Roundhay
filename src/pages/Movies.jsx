@@ -22,13 +22,14 @@ import {
   useDebouncedValue,
   useInfiniteScrollObserver,
 } from "../lib/utils"
+import useWishlistToggle from "../hooks/useWishlistToggle"
 
 const TAB_CONFIG = [
-  { key: "popular", label: "Popular", fetcher: getPopularMovies },
-  { key: "trending", label: "Trending", fetcher: getTrendingMovies },
-  { key: "top_rated", label: "Top Rated", fetcher: getTopRatedMovies },
+  { key: "popular",     label: "Popular",     fetcher: getPopularMovies    },
+  { key: "trending",    label: "Trending",    fetcher: getTrendingMovies   },
+  { key: "top_rated",   label: "Top Rated",   fetcher: getTopRatedMovies   },
   { key: "now_playing", label: "Now Playing", fetcher: getNowPlayingMovies },
-  { key: "upcoming", label: "Upcoming", fetcher: getUpcomingMovies },
+  { key: "upcoming",    label: "Upcoming",    fetcher: getUpcomingMovies   },
 ]
 
 const Movies = () => {
@@ -42,7 +43,7 @@ const Movies = () => {
   const [error, setError] = useState("")
   const loadMoreRef = useRef(null)
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 500)
-  const toggleWishlist = useAppStore((state) => state.toggleWishlist)
+  const handleToggleWishlist = useWishlistToggle()
   const isInWishlist = useAppStore((state) => state.isInWishlist)
 
   const activeTab = useMemo(
@@ -88,17 +89,12 @@ const Movies = () => {
           setMovies([])
         }
       } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
+        if (isMounted) setIsLoading(false)
       }
     }
 
     loadMovies()
-
-    return () => {
-      isMounted = false
-    }
+    return () => { isMounted = false }
   }, [activeTab, debouncedSearchTerm, isSearchActive, page])
 
   const handleLoadMore = useCallback(() => {
@@ -171,7 +167,9 @@ const Movies = () => {
           center
         />
       )}
-      {error && movies.length === 0 && <p className="text-sm text-destructive">{error}</p>}
+      {error && movies.length === 0 && (
+        <p className="text-sm text-destructive">{error}</p>
+      )}
 
       {movies.length > 0 && (
         <>
@@ -210,38 +208,34 @@ const Movies = () => {
                     <button
                       type="button"
                       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        toggleWishlist(movie)
-                      }}
+                      onClick={(event) => handleToggleWishlist(movie, event)}
                       className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
                         wishlisted
                           ? "text-accent opacity-100"
-                          : "text-foreground opacity-0 group-hover:opacity-100"
+                          : "text-foreground opacity-100 xl:opacity-0 xl:group-hover:opacity-100"
                       }`}
                     >
                       <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
                     </button>
 
-                    <div className="pointer-events-none absolute bottom-2 left-2 opacity-0 transition duration-300 group-hover:opacity-100">
+                    <div className="pointer-events-none absolute bottom-2 left-2 opacity-100 xl:opacity-0 transition duration-300 lg:group-hover:opacity-100">
                       <VoteProgress voteAverage={movie.vote_average} />
                     </div>
                   </div>
+
                   <div className="p-3">
                     <h2 className="font-medium text-card-foreground">{movie.title}</h2>
-                    <p className="mt-1 text-xs text-muted-foreground">{movie.release_date || "N/A"}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {movie.release_date || "N/A"}
+                    </p>
                   </div>
                 </article>
               )
             })}
           </div>
 
-          {page < totalPages && (
-            <div ref={loadMoreRef} className="h-1" />
-          )}
-          {isLoading && page > 1 && (
-            <Spinner label="Loading more movies..." center />
-          )}
+          {page < totalPages && <div ref={loadMoreRef} className="h-1" />}
+          {isLoading && page > 1 && <Spinner label="Loading more movies..." center />}
         </>
       )}
     </section>

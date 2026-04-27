@@ -11,7 +11,7 @@ import {
   getTvImages,
   searchTv,
   TMDB_IMAGE_BASE_URL,
-} from "../../services/seriesApi"
+} from "../services/seriesApi"
 import SearchInput from "../components/SearchInput"
 import Spinner from "../components/Spinner"
 import VoteProgress from "../components/VoteProgress"
@@ -22,13 +22,14 @@ import {
   useDebouncedValue,
   useInfiniteScrollObserver,
 } from "../lib/utils"
+import useWishlistToggle from "../hooks/useWishlistToggle"
 
 const TAB_CONFIG = [
-  { key: "trending", label: "Trending", fetcher: (page) => getTrendingTv("day", page) },
+  { key: "trending",    label: "Trending",    fetcher: (page) => getTrendingTv("day", page) },
   { key: "airing_today", label: "Airing Today", fetcher: getAiringTodayTv },
-  { key: "on_the_air", label: "On The Air", fetcher: getOnTheAirTv },
-  { key: "popular", label: "Popular", fetcher: getPopularTv },
-  { key: "top_rated", label: "Top Rated", fetcher: getTopRatedTv },
+  { key: "on_the_air",  label: "On The Air",  fetcher: getOnTheAirTv  },
+  { key: "popular",     label: "Popular",     fetcher: getPopularTv   },
+  { key: "top_rated",   label: "Top Rated",   fetcher: getTopRatedTv  },
 ]
 
 const Series = () => {
@@ -42,7 +43,7 @@ const Series = () => {
   const [error, setError] = useState("")
   const loadMoreRef = useRef(null)
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 500)
-  const toggleWishlist = useAppStore((state) => state.toggleWishlist)
+  const handleToggleWishlist = useWishlistToggle()
   const isInWishlist = useAppStore((state) => state.isInWishlist)
 
   const activeTab = useMemo(
@@ -86,17 +87,12 @@ const Series = () => {
           setShows([])
         }
       } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
+        if (isMounted) setIsLoading(false)
       }
     }
 
     loadSeries()
-
-    return () => {
-      isMounted = false
-    }
+    return () => { isMounted = false }
   }, [activeTab, debouncedSearchTerm, isSearchActive, page])
 
   const handleLoadMore = useCallback(() => {
@@ -168,7 +164,9 @@ const Series = () => {
           center
         />
       )}
-      {error && shows.length === 0 && <p className="text-sm text-destructive">{error}</p>}
+      {error && shows.length === 0 && (
+        <p className="text-sm text-destructive">{error}</p>
+      )}
 
       {shows.length > 0 && (
         <>
@@ -207,26 +205,26 @@ const Series = () => {
                     <button
                       type="button"
                       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        toggleWishlist(show)
-                      }}
+                      onClick={(event) => handleToggleWishlist(show, event)}
                       className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 shadow transition duration-300 ${
                         wishlisted
                           ? "text-accent opacity-100"
-                          : "text-foreground opacity-0 group-hover:opacity-100"
+                          : "text-foreground opacity-100 xl:opacity-0 xl:group-hover:opacity-100"
                       }`}
                     >
                       <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
                     </button>
 
-                    <div className="pointer-events-none absolute bottom-2 left-2 opacity-0 transition duration-300 group-hover:opacity-100">
+                    <div className="pointer-events-none absolute bottom-2 left-2 opacity-100 xl:opacity-0 transition duration-300 lg:group-hover:opacity-100">
                       <VoteProgress voteAverage={show.vote_average} />
                     </div>
                   </div>
+
                   <div className="p-3">
                     <h2 className="font-medium text-card-foreground">{show.name}</h2>
-                    <p className="mt-1 text-xs text-muted-foreground">{show.first_air_date || "N/A"}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {show.first_air_date || "N/A"}
+                    </p>
                   </div>
                 </article>
               )

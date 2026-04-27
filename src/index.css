@@ -34,7 +34,8 @@
   --background: #2c3333;
   --foreground: #e7f6f2;
   --primary: #395b64;
-  --primary-foreground: #e7f6f2;
+  --card-foreground: #e7f6f2;
+  --form-: #e7f6f2;
   --accent: #a5c9ca;
   --accent-foreground: #2c3333;
   --secondary: #a5c9ca;
@@ -68,6 +69,7 @@
   --foreground: #1a2828;
   --primary: #395b64;
   --primary-foreground: #e7f6f2;
+  --form-foreground: #e8f4f4;
   --accent: #2e8b8f;
   --accent-foreground: #ffffff;
   --secondary: #5ba8aa;

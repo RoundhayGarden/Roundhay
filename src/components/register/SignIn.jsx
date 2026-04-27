@@ -2,13 +2,16 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginFormValidationSchema } from "../../utils/validtionSchema";
-import { onInvalid, handleToastMessage } from "../../utils/toastMassages";
+import { onInvalid } from "../../utils/toastMassages";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
-import { signInUser } from "../../../services/seriesApi";
+import { signInUser } from "../../services/seriesApi";
+import { useAppStore } from "../../store/useAppStore";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const syncWishlistFromRetool = useAppStore((s) => s.syncWishlistFromRetool);
+
   const form = useForm({
     resolver: zodResolver(loginFormValidationSchema),
     defaultValues: { email: "", password: "" },
@@ -18,15 +21,24 @@ const SignIn = () => {
     try {
       const user = await signInUser(values);
       localStorage.setItem("user", JSON.stringify(user));
+
+      // Pull the user's wishlist from Retool + enrich with TMDB details
+      await syncWishlistFromRetool();
+
       handleToastMessage(`Welcome back, ${user.username}!`, "success");
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       handleToastMessage(err.message || "Something went wrong.", "error");
     }
   };
 
   const fields = [
-    { name: "email",    label: "Email",    type: "text",     placeholder: "you@example.com" },
+    {
+      name: "email",
+      label: "Email",
+      type: "text",
+      placeholder: "you@example.com",
+    },
     { name: "password", label: "Password", type: "password", placeholder: "" },
   ];
 
@@ -43,10 +55,28 @@ const SignIn = () => {
         .su-ghost:hover   { background-color: var(--accent) !important; }
       `}</style>
 
-      <div style={{ borderRadius: "16px", width: "100%", maxWidth: "420px", padding: "0", overflow: "hidden", animation: "slideUp 0.5s ease both" }}>
+      <div
+        style={{
+          borderRadius: "16px",
+          width: "100%",
+          maxWidth: "420px",
+          padding: "0",
+          overflow: "hidden",
+          animation: "slideUp 0.5s ease both",
+        }}
+      >
         <div style={{ padding: "32px 32px 28px" }}>
           <div style={{ marginBottom: "28px" }}>
-            <h1 style={{ color: "var(--foreground)", fontSize: "clamp(22px, 4vw, 28px)", fontWeight: "600", lineHeight: "1.15", letterSpacing: "-0.02em", margin: 0 }}>
+            <h1
+              style={{
+                color: "var(--foreground)",
+                fontSize: "clamp(22px, 4vw, 28px)",
+                fontWeight: "600",
+                lineHeight: "1.15",
+                letterSpacing: "-0.02em",
+                margin: 0,
+              }}
+            >
               Sign in Roundhay
             </h1>
           </div>
@@ -60,13 +90,37 @@ const SignIn = () => {
                     name={f.name}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel style={{ color: "var(--foreground)", fontSize: "12px", fontWeight: "600", letterSpacing: "0.04em", textTransform: "uppercase", display: "flex", alignItems: "center", marginBottom: "6px" }}>
+                        <FormLabel
+                          style={{
+                            color: "var(--foreground)",
+                            fontSize: "12px",
+                            fontWeight: "600",
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                            display: "flex",
+                            alignItems: "center",
+                            marginBottom: "6px",
+                          }}
+                        >
                           {f.label}
                         </FormLabel>
                         <FormControl>
-                          <Input type={f.type} placeholder={f.placeholder} className="su-input"
-                            style={{ backgroundColor: "var(--input)", borderColor: "var(--border)", color: "var(--foreground)", borderRadius: "8px", height: "44px", fontSize: "14px", paddingLeft: "12px", transition: "border-color 0.2s, box-shadow 0.2s" }}
-                            {...field} />
+                          <Input
+                            type={f.type}
+                            placeholder={f.placeholder}
+                            className="su-input"
+                            style={{
+                              backgroundColor: "var(--form-foreground)",
+                              borderColor: "var(--border)",
+                              color: "var(--foreground)",
+                              borderRadius: "8px",
+                              height: "44px",
+                              fontSize: "14px",
+                              paddingLeft: "12px",
+                              transition: "border-color 0.2s, box-shadow 0.2s",
+                            }}
+                            {...field}
+                          />
                         </FormControl>
                       </FormItem>
                     )}
@@ -74,8 +128,23 @@ const SignIn = () => {
                 </div>
               ))}
               <div style={{ marginTop: "8px" }}>
-                <button type="submit" className="su-submit"
-                  style={{ width: "100%", height: "46px", backgroundColor: "var(--primary)", color: "var(--primary-foreground)", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: "700", letterSpacing: "0.04em", cursor: "pointer", transition: "opacity 0.2s, transform 0.15s" }}>
+                <button
+                  type="submit"
+                  className="su-submit"
+                  style={{
+                    width: "100%",
+                    height: "46px",
+                    backgroundColor: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    letterSpacing: "0.04em",
+                    cursor: "pointer",
+                    transition: "opacity 0.2s, transform 0.15s",
+                  }}
+                >
                   SIGN IN
                 </button>
               </div>
@@ -83,8 +152,23 @@ const SignIn = () => {
           </Form>
 
           <div style={{ paddingTop: "24px" }}>
-            <button type="button" className="su-ghost" onClick={() => navigate("/signup")}
-              style={{ width: "100%", height: "44px", backgroundColor: "transparent", color: "var(--foreground)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "14px", fontWeight: "600", cursor: "pointer", transition: "background-color 0.2s" }}>
+            <button
+              type="button"
+              className="su-ghost"
+              onClick={() => navigate("/signup")}
+              style={{
+                width: "100%",
+                height: "44px",
+                backgroundColor: "transparent",
+                color: "var(--foreground)",
+                border: "1px solid var(--border)",
+                borderRadius: "8px",
+                fontSize: "14px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "background-color 0.2s",
+              }}
+            >
               CREATE A NEW ACCOUNT
             </button>
           </div>
