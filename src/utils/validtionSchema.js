@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 const loginFormValidationSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: "Please enter a valid email address.",
   }),
   password: z.string().min(8, {
@@ -18,7 +18,7 @@ const signupFormValidationSchema = z
       .max(30, { message: "Username must be at most 30 characters." })
       .regex(/^[a-zA-Z]/, { message: "Username must start with a letter." }),
 
-    email: z.string().email({ message: "Invalid email address." }),
+    email: z.email({ message: "Invalid email address." }),
 
     password: z
       .string()

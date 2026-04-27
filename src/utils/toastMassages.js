@@ -11,6 +11,15 @@ const baseOptions = {
   transition: Slide,
 };
 
+export const onInvalid = (errors) => {
+    Object.values(errors).forEach((error) => {
+      if (error?.message) {
+        handleToastMessage(error.message, "warning");
+      }
+    });
+}
+
+
 export const handleToastMessage = (message, type) => {
   const theme = document.documentElement.classList.contains("dark")
     ? "dark"

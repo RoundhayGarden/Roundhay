@@ -1,9 +1,9 @@
-import { createHashRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "./MainLayout";
 import NotFound from "../pages/NotFound";
 import SignIntoUp from "../pages/SignIntoUp";
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
@@ -20,5 +20,8 @@ const router = createHashRouter([
     path: "*",
     element: <NotFound />,
   },
-]);
+],{
+    basename: "/Roundhay",
+  },
+);
 export default router;
