@@ -1,3 +1,4 @@
+
 import { createBrowserRouter, Navigate } from "react-router-dom"
 import MainLayout from "./MainLayout"
 import Home from "../pages/Home"
@@ -7,10 +8,11 @@ import Collection from "../pages/Collection"
 import SearchResults from "../pages/SearchResults"
 import MovieDetails from "../pages/MovieDetails"
 import SeriesDetails from "../pages/SeriesDetails"
+import NotFound from "../pages/NotFound";
+import SignIntoUp from "../pages/SignIntoUp";
 
-const router = createBrowserRouter(
-  [
-    {
+const router = createBrowserRouter([
+   {
       path: "/",
       element: <MainLayout />,
       children: [
@@ -26,10 +28,20 @@ const router = createBrowserRouter(
         { path: "*", element: <Navigate to="/" replace /> },
       ],
     },
-  ],
   {
+    path: "/signin",
+    element: <SignIntoUp />,
+  },
+  {
+    path: "/signup",
+    element: <SignIntoUp />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+],{
     basename: "/Roundhay",
-  }
-)
-
-export default router
+  },
+);
+export default router;
