@@ -248,9 +248,9 @@ export default function SectionSlider({
 function MovieCard({ movie }) {
   const navigate = useNavigate();
   const handleToggleWishlist = useWishlistToggle();
-  const isInWishlist = useAppStore((state) => state.isInWishlist);
-
-  const wishlisted = isInWishlist(movie.id);
+  const wishlisted = useAppStore((s) =>
+    s.wishlist.some((m) => m.id === movie.id),
+  );
 
   const title = movie.title || movie.name || "Untitled";
   const releaseDate = movie.release_date || movie.first_air_date || "N/A";

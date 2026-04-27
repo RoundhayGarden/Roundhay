@@ -116,7 +116,7 @@ export default function Collection() {
                                 <Badge variant="default">{wishlist.length}</Badge>
                             )}
                         </div>
-                        {wishlist.length > 0 && (
+                        {/* {wishlist.length > 0 && (
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -125,7 +125,7 @@ export default function Collection() {
                             >
                                 <Trash2 size={13} /> Clear all
                             </Button>
-                        )}
+                        )} */}
                     </div>
 
                     {wishlist.length > 0 ? (

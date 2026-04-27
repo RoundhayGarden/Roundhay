@@ -44,7 +44,7 @@ const Series = () => {
   const loadMoreRef = useRef(null)
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 500)
   const handleToggleWishlist = useWishlistToggle()
-  const isInWishlist = useAppStore((state) => state.isInWishlist)
+  const wishlist = useAppStore((state) => state.wishlist)
 
   const activeTab = useMemo(
     () => TAB_CONFIG.find((item) => item.key === tab) ?? TAB_CONFIG[0],
@@ -172,7 +172,7 @@ const Series = () => {
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {shows.map((show) => {
-              const wishlisted = isInWishlist(show.id)
+              const wishlisted = wishlist.some((m) => m.id === show.id)
 
               return (
                 <article
