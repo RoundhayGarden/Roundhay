@@ -44,8 +44,7 @@ A modern movie and TV series discovery app built with React. Browse trending con
 ```
 Roundhay/
 ├── src/
-│   ├── api/
-│   │   └── seriesApi.js          # TMDB + Retool axios instances and helpers
+instances and helpers
 │   ├── components/
 │   │   ├── auth/
 │   │   │   ├── RegisterWell.jsx  # Auth page layout (responsive animated shell)
@@ -72,7 +71,9 @@ Roundhay/
 │   │   └── useAppStore.js        # Zustand store — theme, wishlist, search history
 │   └── main.jsx
 ├── services/
-│   └── tmdb.js                   # Legacy TMDB axios instance (movies)
+│   └── tmdb.js                   # Legacy TMDB axios 
+│   └── seriesApi.js              # TMDB + Retool axios 
+instance (movies)
 ├── .env                          # Environment variables (see below)
 ├── index.html
 ├── package.json
