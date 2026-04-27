@@ -10,7 +10,6 @@ import SeriesDetails from "../pages/SeriesDetails";
 import NotFound from "../pages/NotFound";
 import SignIntoUp from "../pages/SignIntoUp";
 
-// Reads user from localStorage — if missing, redirect to /signin
 const RequireAuth = () => {
   const user = localStorage.getItem("user");
   if (!user) return <Navigate to="/signin" replace />;
