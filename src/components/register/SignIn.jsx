@@ -26,7 +26,7 @@ const SignIn = () => {
       await syncWishlistFromRetool();
 
       handleToastMessage(`Welcome back, ${user.username}!`, "success");
-      navigate("/home");
+      navigate("/");
     } catch (err) {
       handleToastMessage(err.message || "Something went wrong.", "error");
     }
